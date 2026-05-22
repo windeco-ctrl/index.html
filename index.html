@@ -1,424 +1,728 @@
-
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Channel Health — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
+:root {
+  --bg: #0d0d0f;
+  --bg2: #141416;
+  --bg3: #1c1c20;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f0f0f2;
+  --text2: #8b8b96;
+  --text3: #55555f;
+  --accent: #7c6aff;
+  --accent2: #a896ff;
+  --green: #22c97a;
+  --green-bg: rgba(34,201,122,0.1);
+  --amber: #f5a623;
+  --amber-bg: rgba(245,166,35,0.1);
+  --red: #ff5f5f;
+  --red-bg: rgba(255,95,95,0.1);
+  --blue: #4da6ff;
+  --blue-bg: rgba(77,166,255,0.1);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans)}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-.tab-bar{display:flex;gap:4px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.5rem;padding-bottom:0}
-.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:8px 16px;font-size:14px;color:var(--color-text-secondary);cursor:pointer;font-family:var(--font-sans);margin-bottom:-1px}
-.tab-btn.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary);font-weight:500}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5}
+/* LAYOUT */
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.logo{padding:8px 12px 24px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
+.logo span{color:var(--accent)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);font-size:14px;color:var(--text2);cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(124,106,255,.15);color:var(--accent2);font-weight:500}
+.nav-icon{width:16px;height:16px;opacity:.7;flex-shrink:0}
+.sidebar-bottom{margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
+.main{padding:32px;overflow-y:auto}
+/* HEADER */
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px}
+.page-title{font-size:22px;font-weight:500}
+.page-sub{font-size:13px;color:var(--text2);margin-top:2px}
+.btn-group{display:flex;gap:8px}
+.btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif}
+.btn:hover{background:var(--bg2);border-color:var(--border2)}
+.btn-accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-accent:hover{background:#6b59ee;border-color:#6b59ee}
+/* PAGES */
 .page{display:none}.page.active{display:block}
-.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
-.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
-.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
-.metric-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem}
-.metric-card .label{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px}
-.metric-card .value{font-size:22px;font-weight:500;color:var(--color-text-primary)}
-.metric-card .sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
-.section-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
-.channel-row{display:grid;grid-template-columns:140px 1fr 80px 80px 80px 80px 90px;gap:8px;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
-.channel-row:last-child{border-bottom:none}
-.channel-header{display:grid;grid-template-columns:140px 1fr 80px 80px 80px 80px 90px;gap:8px;padding:6px 0;border-bottom:1px solid var(--color-border-tertiary);margin-bottom:4px}
-.channel-header span{font-size:11px;color:var(--color-text-secondary);font-weight:500}
-.health-bar-wrap{background:var(--color-background-secondary);border-radius:20px;height:8px;overflow:hidden}
-.health-bar{height:8px;border-radius:20px;transition:width .4s}
-.score-badge{display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;text-align:center}
-.score-great{background:#EAF3DE;color:#3B6D11}
-.score-good{background:#E6F1FB;color:#185FA5}
-.score-ok{background:#FAEEDA;color:#854F0B}
-.score-bad{background:#FCEBEB;color:#A32D2D}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.form-group{display:flex;flex-direction:column;gap:4px}
-.form-group label{font-size:12px;color:var(--color-text-secondary)}
-.form-group input,.form-group select{width:100%;padding:8px 10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:14px;font-family:var(--font-sans)}
-.btn{padding:8px 18px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:14px;cursor:pointer;font-family:var(--font-sans)}
-.btn:hover{background:var(--color-background-secondary)}
-.btn-primary{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
-.btn-primary:hover{opacity:.85;background:var(--color-text-primary)}
-.alert-list{display:flex;flex-direction:column;gap:8px}
-.alert-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:var(--border-radius-md);font-size:13px}
-.alert-warn{background:#FAEEDA;color:#633806}
-.alert-danger{background:#FCEBEB;color:#791F1F}
-.alert-info{background:#E6F1FB;color:#0C447C}
-.report-section{margin-bottom:1.5rem}
-.report-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-.channel-name{font-weight:500;font-size:14px;color:var(--color-text-primary)}
-.channel-handle{font-size:12px;color:var(--color-text-secondary)}
-.trend-up{color:#3B6D11}.trend-down{color:#A32D2D}.trend-flat{color:var(--color-text-secondary)}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+/* METRICS GRID */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.metric-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.metric-label{font-size:12px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.metric-value{font-size:26px;font-weight:500;line-height:1}
+.metric-sub{font-size:12px;color:var(--text2);margin-top:6px}
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px}
+/* TABLE */
+.channel-table{width:100%;border-collapse:collapse}
+.channel-table th{font-size:11px;color:var(--text3);font-weight:500;text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em}
+.channel-table td{padding:12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text)}
+.channel-table tr:last-child td{border-bottom:none}
+.channel-table tr:hover td{background:rgba(255,255,255,.02)}
+/* HEALTH BAR */
+.health-wrap{display:flex;align-items:center;gap:8px}
+.hbar-bg{flex:1;height:6px;background:var(--bg3);border-radius:20px;overflow:hidden;min-width:60px}
+.hbar{height:6px;border-radius:20px;transition:width .5s}
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px}
+.badge-great{background:var(--green-bg);color:var(--green)}
+.badge-good{background:var(--blue-bg);color:var(--blue)}
+.badge-ok{background:var(--amber-bg);color:var(--amber)}
+.badge-bad{background:var(--red-bg);color:var(--red)}
+/* CHANNEL DETAIL */
+.channels-grid{display:grid;gap:12px}
+.ch-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.ch-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.ch-info{display:flex;align-items:center;gap:12px}
+.ch-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;flex-shrink:0}
+.ch-name{font-size:15px;font-weight:500}
+.ch-handle{font-size:12px;color:var(--text2);margin-top:1px}
+.ch-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
+.ch-metric{background:var(--bg3);border-radius:var(--radius-sm);padding:12px}
+.ch-metric-label{font-size:11px;color:var(--text2);margin-bottom:4px}
+.ch-metric-value{font-size:18px;font-weight:500}
+.ch-metric-sub{font-size:11px;color:var(--text2);margin-top:2px}
+/* ALERTS */
+.alert-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);margin-bottom:8px;font-size:13px}
+.alert-danger{background:var(--red-bg);border:1px solid rgba(255,95,95,.2);color:#ffb3b3}
+.alert-warn{background:var(--amber-bg);border:1px solid rgba(245,166,35,.2);color:#ffd180}
+.alert-info{background:var(--green-bg);border:1px solid rgba(34,201,122,.2);color:#80ffbb}
+/* REPORT */
+.report-output{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;white-space:pre-wrap;line-height:1.8;color:var(--text2);margin-top:16px}
+/* SETUP PAGE */
+.setup-step{display:flex;gap:16px;margin-bottom:24px}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-content h3{font-size:14px;font-weight:500;margin-bottom:6px}
+.step-content p,.step-content li{font-size:13px;color:var(--text2);line-height:1.7}
+.step-content ul{padding-left:16px}
+.code-block{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-top:8px;color:var(--accent2);line-height:1.8}
+/* CONFIG INPUT */
+.config-row{display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap}
+.form-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px}
+.form-group label{font-size:12px;color:#aaaab8;font-weight:500;letter-spacing:.01em}
+.form-group input,.form-group select,.form-group textarea{background:#28283a;border:1.5px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);padding:11px 13px;color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;width:100%;transition:border-color .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);background:#2c2c42}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
 .modal-overlay.open{display:flex}
-.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:1.5rem;width:500px;max-width:95vw;max-height:85vh;overflow-y:auto}
-.modal-title{font-size:16px;font-weight:500;margin-bottom:1rem;color:var(--color-text-primary)}
-.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+.modal{background:#1e1e26;border:1.5px solid rgba(255,255,255,.2);border-radius:var(--radius);padding:28px;width:540px;max-width:95vw;max-height:88vh;overflow-y:auto}
+.modal-title{font-size:17px;font-weight:600;margin-bottom:20px;color:#fff;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:14px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+/* STATUS DOT */
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dot-red{background:var(--red)}.dot-amber{background:var(--amber)}.dot-green{background:var(--green)}
+/* CHART WRAPPER */
+.chart-wrap{position:relative;height:220px;margin-top:4px}
+/* TREND */
+.trend-up{color:var(--green)}.trend-down{color:var(--red)}.trend-flat{color:var(--text2)}
+/* LOADING */
+.loading{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:13px;padding:24px 0}
+.spinner{width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* CONNECTION STATUS */
+.conn-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 10px;border-radius:20px}
+.conn-ok{background:var(--green-bg);color:var(--green)}
+.conn-err{background:var(--red-bg);color:var(--red)}
+.conn-pending{background:var(--amber-bg);color:var(--amber)}
 </style>
-
-<h2 class="sr-only">TikTok Channel Health Dashboard — theo dõi sức khoẻ và chỉ số tất cả các kênh</h2>
-
-<div style="padding:1rem 0">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-    <div>
-      <h1 style="font-size:20px;font-weight:500;color:var(--color-text-primary)">Channel Health Dashboard</h1>
-      <p style="font-size:13px;color:var(--color-text-secondary);margin-top:2px">Cập nhật lần cuối: <span id="last-update">—</span></p>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">Tik<span>Health</span></div>
+    <button class="nav-item active" onclick="switchTab('overview')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Tổng quan
+    </button>
+    <button class="nav-item" onclick="switchTab('channels')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Các kênh
+    </button>
+    <button class="nav-item" onclick="switchTab('alerts')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Cảnh báo <span id="alert-badge" style="margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;display:none"></span>
+    </button>
+    <button class="nav-item" onclick="switchTab('report')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Báo cáo
+    </button>
+    <div class="sidebar-bottom">
+      <button class="nav-item" onclick="switchTab('setup')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        Cài đặt
+      </button>
     </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn" onclick="openModal('add-channel-modal')"><i class="ti ti-plus" aria-hidden="true"></i> Thêm kênh</button>
-      <button class="btn btn-primary" onclick="openDataEntry()"><i class="ti ti-edit" aria-hidden="true"></i> Nhập dữ liệu</button>
-    </div>
-  </div>
+  </aside>
 
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('overview')">Tổng quan</button>
-    <button class="tab-btn" onclick="switchTab('channels')">Tất cả kênh</button>
-    <button class="tab-btn" onclick="switchTab('alerts')">Cảnh báo <span id="alert-count-badge"></span></button>
-    <button class="tab-btn" onclick="switchTab('report')">Xuất báo cáo</button>
-  </div>
+  <!-- MAIN -->
+  <main class="main">
 
-  <!-- OVERVIEW -->
-  <div id="page-overview" class="page active">
-    <div class="grid-4" id="overview-metrics"></div>
-    <div class="card">
-      <p class="section-title">Xếp hạng sức khoẻ kênh</p>
-      <div class="channel-header">
-        <span>Kênh</span><span>Điểm sức khoẻ</span><span>Followers</span><span>Eng. Rate</span><span>Views avg</span><span>Tần suất</span><span>Trạng thái</span>
-      </div>
-      <div id="channel-ranking"></div>
-    </div>
-    <div class="card">
-      <p class="section-title">Biểu đồ engagement rate</p>
-      <div style="position:relative;height:220px"><canvas id="engChart" role="img" aria-label="Biểu đồ engagement rate theo kênh"></canvas></div>
-    </div>
-  </div>
-
-  <!-- CHANNELS -->
-  <div id="page-channels" class="page">
-    <div id="channels-detail"></div>
-  </div>
-
-  <!-- ALERTS -->
-  <div id="page-alerts" class="page">
-    <div class="card">
-      <p class="section-title">Cảnh báo cần xử lý</p>
-      <div class="alert-list" id="alert-list"></div>
-    </div>
-  </div>
-
-  <!-- REPORT -->
-  <div id="page-report" class="page">
-    <div class="card">
-      <p class="section-title">Tạo báo cáo</p>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Kỳ báo cáo</label>
-          <select id="report-period"><option>Tuần này</option><option>Tháng này</option><option>Tháng trước</option><option>Tùy chỉnh</option></select>
+    <!-- OVERVIEW -->
+    <div id="page-overview" class="page active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Tổng quan</div>
+          <div class="page-sub" id="last-sync">Chưa đồng bộ</div>
         </div>
-        <div class="form-group">
-          <label>Định dạng</label>
-          <select id="report-format"><option>Tóm tắt văn bản</option><option>Chi tiết đầy đủ</option></select>
+        <div class="btn-group">
+          <button class="btn" onclick="syncFromSheets()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Đồng bộ Sheets
+          </button>
+          <button class="btn btn-accent" onclick="openModal('entry-modal')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nhập dữ liệu
+          </button>
         </div>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" onclick="generateReport('text')"><i class="ti ti-file-text" aria-hidden="true"></i> Tạo báo cáo văn bản</button>
-        <button class="btn btn-primary" onclick="sendReport()"><i class="ti ti-send" aria-hidden="true"></i> Gửi báo cáo (AI) ↗</button>
+      <div class="metrics-grid" id="overview-metrics"></div>
+      <div class="card">
+        <div class="card-title">Xếp hạng sức khoẻ kênh</div>
+        <table class="channel-table" id="ranking-table">
+          <thead><tr>
+            <th>Kênh</th><th>Sức khoẻ</th><th>Followers</th>
+            <th>Eng. Rate</th><th>Watch time</th><th>Video/kỳ</th><th>Trạng thái</th>
+          </tr></thead>
+          <tbody id="ranking-body"></tbody>
+        </table>
       </div>
-      <div id="report-output" style="margin-top:1rem;display:none"></div>
+      <div class="card">
+        <div class="card-title">Engagement rate so sánh</div>
+        <div class="chart-wrap"><canvas id="engChart" role="img" aria-label="Biểu đồ engagement rate các kênh"></canvas></div>
+      </div>
     </div>
-  </div>
+
+    <!-- CHANNELS -->
+    <div id="page-channels" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Tất cả kênh</div><div class="page-sub">Chi tiết từng kênh</div></div>
+        <div class="btn-group">
+          <button class="btn btn-accent" onclick="openModal('add-channel-modal')">+ Thêm kênh</button>
+        </div>
+      </div>
+      <div id="channels-list"></div>
+    </div>
+
+    <!-- ALERTS -->
+    <div id="page-alerts" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Cảnh báo</div><div class="page-sub">Vấn đề cần xử lý ngay</div></div>
+      </div>
+      <div class="card" id="alerts-content"></div>
+    </div>
+
+    <!-- REPORT -->
+    <div id="page-report" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Xuất báo cáo</div><div class="page-sub">Tạo và chia sẻ báo cáo</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Tạo báo cáo</div>
+        <div class="config-row">
+          <div class="form-group"><label>Kỳ báo cáo</label>
+            <select id="rpt-period"><option>Tuần này</option><option>Tuần trước</option><option>Tháng này</option><option>Tháng trước</option></select>
+          </div>
+          <div class="form-group"><label>Mức độ chi tiết</label>
+            <select id="rpt-detail"><option>Tóm tắt</option><option>Đầy đủ</option></select>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;padding-bottom:1px">
+            <button class="btn" onclick="generateReport()">Tạo báo cáo</button>
+            <button class="btn btn-accent" onclick="copyReport()">Copy</button>
+          </div>
+        </div>
+        <div id="report-out" class="report-output" style="display:none"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Hướng dẫn gửi báo cáo</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8">
+          <p>Sau khi tạo báo cáo:</p>
+          <ul style="margin-top:8px;padding-left:16px">
+            <li>Bấm <strong style="color:var(--text)">Copy</strong> → paste vào Slack, Zalo, hoặc email</li>
+            <li>Hoặc vào Google Sheets → tab <em>Reports</em> — dữ liệu đã tự đồng bộ</li>
+            <li>Lên lịch nhắc nhở Google Calendar vào mỗi thứ Hai để nhập số liệu tuần</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETUP -->
+    <div id="page-setup" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Cài đặt kết nối</div><div class="page-sub">Kết nối Google Sheets làm database</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Trạng thái kết nối</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span id="conn-status" class="conn-badge conn-pending">⏳ Chưa cấu hình</span>
+          <button class="btn" onclick="testConnection()">Kiểm tra kết nối</button>
+        </div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label>Google Sheets ID <span style="color:var(--text2)">(lấy từ URL của Sheets)</span></label>
+          <input type="text" id="sheets-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms" />
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label>Google Sheets API Key</label>
+          <input type="password" id="sheets-api-key" placeholder="AIzaSy..." />
+        </div>
+        <button class="btn btn-accent" onclick="saveConfig()">Lưu cấu hình</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Hướng dẫn cài đặt Google Sheets (5 bước)</div>
+        <div class="setup-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Tạo Google Sheet mới</h3>
+            <p>Mở <a href="https://sheets.google.com" target="_blank" style="color:var(--accent2)">sheets.google.com</a> → tạo spreadsheet mới. Đặt tên: <em>TikTok Dashboard</em></p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>Tạo 2 tab theo cấu trúc này</h3>
+            <p>Tab 1: <strong style="color:var(--text)">Channels</strong> — thêm các cột:</p>
+            <div class="code-block">id | name | handle | category | color</div>
+            <p style="margin-top:8px">Tab 2: <strong style="color:var(--text)">Data</strong> — thêm các cột:</p>
+            <div class="code-block">channel_id | period | followers | follower_delta | views_avg | videos | likes | comments | shares | watchtime | note</div>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Lấy Sheets ID</h3>
+            <p>Nhìn vào URL của Google Sheet:<br>
+            <code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent2)">https://docs.google.com/spreadsheets/d/<strong style="color:var(--green)">ĐÂY_LÀ_SHEETS_ID</strong>/edit</code></p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h3>Tạo Google Sheets API Key</h3>
+            <ul>
+              <li>Vào <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent2)">console.cloud.google.com</a></li>
+              <li>Tạo project mới → bật <em>Google Sheets API</em></li>
+              <li>Vào <em>Credentials</em> → tạo <em>API Key</em></li>
+              <li>Copy API Key dán vào ô bên trên</li>
+            </ul>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h3>Chia sẻ Sheet (quan trọng)</h3>
+            <p>Trong Google Sheet → Share → chọn <em>"Anyone with the link can view"</em></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Deploy lên web (Vercel — miễn phí)</div>
+        <div class="setup-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Upload file lên GitHub</h3>
+            <ul>
+              <li>Vào <a href="https://github.com" target="_blank" style="color:var(--accent2)">github.com</a> → đăng ký/đăng nhập</li>
+              <li>Tạo repository mới, tên: <code style="font-family:'DM Mono',monospace;color:var(--accent2)">tiktok-dashboard</code></li>
+              <li>Upload file <code style="font-family:'DM Mono',monospace;color:var(--accent2)">index.html</code> vào repo</li>
+            </ul>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>Deploy lên Vercel</h3>
+            <ul>
+              <li>Vào <a href="https://vercel.com" target="_blank" style="color:var(--accent2)">vercel.com</a> → đăng nhập bằng GitHub</li>
+              <li>Bấm <em>New Project</em> → chọn repo <code style="font-family:'DM Mono',monospace;color:var(--accent2)">tiktok-dashboard</code></li>
+              <li>Bấm <em>Deploy</em> — xong! Web sẽ có địa chỉ kiểu <code style="font-family:'DM Mono',monospace;color:var(--accent2)">tiktok-dashboard.vercel.app</code></li>
+            </ul>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Cập nhật sau này</h3>
+            <p>Chỉ cần upload file <code style="font-family:'DM Mono',monospace;color:var(--accent2)">index.html</code> mới lên GitHub — Vercel tự deploy trong 30 giây.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
 </div>
 
 <!-- MODAL: Add Channel -->
 <div class="modal-overlay" id="add-channel-modal">
   <div class="modal">
-    <p class="modal-title">Thêm kênh mới</p>
-    <div class="form-row">
-      <div class="form-group"><label>Tên nghệ sĩ</label><input type="text" id="new-name" placeholder="VD: Sơn Tùng MTP"></div>
-      <div class="form-group"><label>TikTok handle</label><input type="text" id="new-handle" placeholder="@username"></div>
+    <div class="modal-title">Thêm kênh mới</div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Tên nghệ sĩ</label><input type="text" id="nc-name" placeholder="VD: Sơn Tùng MTP"></div>
+      <div class="form-group"><label>TikTok Handle</label><input type="text" id="nc-handle" placeholder="@username"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Followers hiện tại</label><input type="number" id="new-followers" placeholder="0"></div>
-      <div class="form-group"><label>Thể loại nội dung</label><select id="new-category"><option>Âm nhạc</option><option>Hài hước</option><option>Lifestyle</option><option>Beauty</option><option>Acting</option><option>Khác</option></select></div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Followers hiện tại</label><input type="number" id="nc-followers" placeholder="0"></div>
+      <div class="form-group"><label>Thể loại</label>
+        <select id="nc-cat"><option>Âm nhạc</option><option>Hài hước</option><option>Lifestyle</option><option>Beauty</option><option>Acting</option><option>Khác</option></select>
+      </div>
     </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
+    <div class="modal-footer">
       <button class="btn" onclick="closeModal('add-channel-modal')">Huỷ</button>
-      <button class="btn btn-primary" onclick="addChannel()">Thêm kênh</button>
+      <button class="btn btn-accent" onclick="addChannel()">Thêm kênh</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: Data Entry -->
-<div class="modal-overlay" id="data-entry-modal">
+<div class="modal-overlay" id="entry-modal">
   <div class="modal">
-    <p class="modal-title">Nhập dữ liệu tuần/tháng</p>
-    <div class="form-group" style="margin-bottom:12px">
-      <label>Chọn kênh</label>
-      <select id="entry-channel"></select>
+    <div class="modal-title">Nhập dữ liệu kênh</div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Kênh</label><select id="e-channel"></select></div>
+      <div class="form-group"><label>Kỳ</label>
+        <select id="e-period"><option>Tuần này</option><option>Tuần trước</option><option>Tháng này</option><option>Tháng trước</option></select>
+      </div>
     </div>
-    <div class="form-group" style="margin-bottom:12px">
-      <label>Kỳ nhập liệu</label>
-      <select id="entry-period"><option>Tuần này</option><option>Tuần trước</option><option>Tháng này</option><option>Tháng trước</option></select>
+    <div class="form-row-2">
+      <div class="form-group"><label>Followers tổng</label><input type="number" id="e-followers" placeholder="0"></div>
+      <div class="form-group"><label>Tăng/giảm follower</label><input type="number" id="e-delta" placeholder="±0"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Followers</label><input type="number" id="entry-followers" placeholder="0"></div>
-      <div class="form-group"><label>Followers tăng/giảm</label><input type="number" id="entry-follower-delta" placeholder="±0"></div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Views avg / video</label><input type="number" id="e-views" placeholder="0"></div>
+      <div class="form-group"><label>Số video đăng</label><input type="number" id="e-videos" placeholder="0"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Tổng views (avg/video)</label><input type="number" id="entry-views" placeholder="0"></div>
-      <div class="form-group"><label>Số video đã đăng</label><input type="number" id="entry-videos" placeholder="0"></div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Likes avg / video</label><input type="number" id="e-likes" placeholder="0"></div>
+      <div class="form-group"><label>Comments avg / video</label><input type="number" id="e-comments" placeholder="0"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Likes avg/video</label><input type="number" id="entry-likes" placeholder="0"></div>
-      <div class="form-group"><label>Comments avg/video</label><input type="number" id="entry-comments" placeholder="0"></div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Shares avg / video</label><input type="number" id="e-shares" placeholder="0"></div>
+      <div class="form-group"><label>Watch time avg (%)</label><input type="number" id="e-watchtime" placeholder="0" max="100"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Shares avg/video</label><input type="number" id="entry-shares" placeholder="0"></div>
-      <div class="form-group"><label>Watch time avg (%)</label><input type="number" id="entry-watchtime" placeholder="0" max="100"></div>
-    </div>
-    <div class="form-group" style="margin-bottom:12px">
-      <label>Ghi chú</label>
-      <input type="text" id="entry-note" placeholder="VD: ra album mới, collab...">
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
-      <button class="btn" onclick="closeModal('data-entry-modal')">Huỷ</button>
-      <button class="btn btn-primary" onclick="saveEntry()">Lưu dữ liệu</button>
+    <div class="form-group" style="margin-bottom:4px"><label>Ghi chú</label><input type="text" id="e-note" placeholder="VD: ra album mới, viral trend..."></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('entry-modal')">Huỷ</button>
+      <button class="btn btn-accent" onclick="saveEntry()">Lưu dữ liệu</button>
     </div>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const COLORS = ['#378ADD','#1D9E75','#D85A30','#D4537E','#7F77DD','#639922','#BA7517','#E24B4A','#0F6E56','#3C3489'];
+// ─── CONFIG (lưu localStorage) ───────────────────────────────────────────────
+const CFG_KEY = 'tikhealth_config';
+const DATA_KEY = 'tikhealth_data';
+const CHAN_KEY = 'tikhealth_channels';
 
-let channels = [
-  {id:1,name:'Mỹ Tâm',handle:'@mytam_official',category:'Âm nhạc',color:COLORS[0],data:{followers:2100000,followerDelta:12000,viewsAvg:320000,videos:3,likes:18000,comments:1200,shares:2800,watchtime:72,note:''}},
-  {id:2,name:'Karik',handle:'@karik_official',category:'Âm nhạc',color:COLORS[1],data:{followers:890000,followerDelta:4200,viewsAvg:95000,videos:5,likes:6500,comments:480,shares:920,watchtime:58,note:''}},
-  {id:3,name:'Lou Hoàng',handle:'@louhoang',category:'Âm nhạc',color:COLORS[2],data:{followers:560000,followerDelta:-800,viewsAvg:42000,videos:2,likes:2100,comments:190,shares:340,watchtime:44,note:'Ít đăng bài'}},
-  {id:4,name:'Tăng Duy Tân',handle:'@tangduytan',category:'Âm nhạc',color:COLORS[3],data:{followers:1450000,followerDelta:31000,viewsAvg:280000,videos:6,likes:22000,comments:2100,shares:4100,watchtime:81,note:'Viral trend'}},
-];
-let nextId = 5;
+function loadConfig(){return JSON.parse(localStorage.getItem(CFG_KEY)||'{}')}
+function saveConfigData(cfg){localStorage.setItem(CFG_KEY,JSON.stringify(cfg))}
 
-function calcScore(d){
-  if(!d) return 0;
-  const eng = d.viewsAvg>0 ? ((d.likes+d.comments*2+d.shares*3)/d.viewsAvg)*100 : 0;
-  const freq = Math.min(d.videos/4*100,100);
-  const wt = d.watchtime;
-  const growth = d.followerDelta>0?Math.min(d.followerDelta/(d.followers*0.02)*100,100):Math.max(50+d.followerDelta/(d.followers*0.01)*2,0);
-  const engScore = Math.min(eng/8*100,100);
-  return Math.round(engScore*0.35 + wt*0.25 + freq*0.2 + growth*0.2);
-}
+// ─── DEFAULT DATA ────────────────────────────────────────────────────────────
+const DEFAULT_CHANNELS = [];
+const DEFAULT_DATA = [];
 
-function scoreBadge(s){
-  if(s>=80) return `<span class="score-badge score-great"><i class="ti ti-heart-filled" style="font-size:11px"></i> Rất khoẻ ${s}</span>`;
-  if(s>=60) return `<span class="score-badge score-good">Khoẻ ${s}</span>`;
-  if(s>=40) return `<span class="score-badge score-ok">Trung bình ${s}</span>`;
-  return `<span class="score-badge score-bad">Cần cải thiện ${s}</span>`;
-}
+function getChannels(){return JSON.parse(localStorage.getItem(CHAN_KEY)||'null')||DEFAULT_CHANNELS}
+function getEntries(){return JSON.parse(localStorage.getItem(DATA_KEY)||'null')||DEFAULT_DATA}
+function saveChannels(ch){localStorage.setItem(CHAN_KEY,JSON.stringify(ch))}
+function saveEntries(en){localStorage.setItem(DATA_KEY,JSON.stringify(en))}
 
+let nextId = () => Math.max(0,...getChannels().map(c=>c.id))+1;
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
 function fmtNum(n){
+  n=Number(n)||0;
   if(n>=1000000) return (n/1000000).toFixed(1)+'M';
   if(n>=1000) return (n/1000).toFixed(1)+'K';
-  return n+'';
+  return n.toString();
 }
-
 function engRate(d){
-  if(!d||!d.viewsAvg) return '0%';
-  return (((d.likes+d.comments*2+d.shares*3)/d.viewsAvg)*100).toFixed(1)+'%';
+  if(!d||!d.views_avg) return 0;
+  return +((((d.likes+d.comments*2+d.shares*3)/d.views_avg)*100).toFixed(1));
+}
+function calcScore(d){
+  if(!d) return 0;
+  const eng = d.views_avg>0 ? ((d.likes+d.comments*2+d.shares*3)/d.views_avg)*100 : 0;
+  const freq = Math.min((d.videos/4)*100,100);
+  const wt = d.watchtime||0;
+  const growth = d.follower_delta>0 ? Math.min(d.follower_delta/(d.followers*0.02)*100,100) : Math.max(50+d.follower_delta/((d.followers||1)*0.01)*2,0);
+  return Math.round(Math.min(eng/8*100,100)*0.35 + wt*0.25 + freq*0.2 + growth*0.2);
+}
+function scoreClass(s){return s>=80?'great':s>=60?'good':s>=40?'ok':'bad'}
+function scoreLabel(s){return s>=80?'Rất khoẻ':s>=60?'Khoẻ':s>=40?'Trung bình':'Cần cải thiện'}
+function barColor(s){return s>=80?'#22c97a':s>=60?'#4da6ff':s>=40?'#f5a623':'#ff5f5f'}
+function latestEntry(channelId){
+  const entries=getEntries().filter(e=>e.channel_id===channelId);
+  return entries.length?entries[entries.length-1]:null;
 }
 
+// ─── OVERVIEW ─────────────────────────────────────────────────────────────────
 function renderOverview(){
-  const scores = channels.map(c=>calcScore(c.data));
-  const avgScore = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
-  const totalFollowers = channels.reduce((a,c)=>a+(c.data.followers||0),0);
-  const healthy = scores.filter(s=>s>=60).length;
-  const alerts = buildAlerts();
-  document.getElementById('overview-metrics').innerHTML = `
-    <div class="metric-card"><div class="label">Tổng kênh</div><div class="value">${channels.length}</div><div class="sub">${healthy} kênh khoẻ</div></div>
-    <div class="metric-card"><div class="label">Điểm TB toàn danh mục</div><div class="value">${avgScore}<span style="font-size:14px;color:var(--color-text-secondary)">/100</span></div><div class="sub">${avgScore>=60?'Danh mục ổn định':'Cần chú ý'}</div></div>
-    <div class="metric-card"><div class="label">Tổng followers</div><div class="value">${fmtNum(totalFollowers)}</div><div class="sub">Tất cả kênh</div></div>
-    <div class="metric-card"><div class="label">Cảnh báo</div><div class="value" style="color:${alerts.length>0?'#A32D2D':'#3B6D11'}">${alerts.length}</div><div class="sub">${alerts.length>0?'Cần xử lý':'Tất cả ổn'}</div></div>
+  const channels=getChannels();
+  const scores=channels.map(c=>calcScore(latestEntry(c.id)));
+  const avgScore=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;
+  const totalF=channels.reduce((a,c)=>{const d=latestEntry(c.id);return a+(d?Number(d.followers):0)},0);
+  const healthy=scores.filter(s=>s>=60).length;
+  const alerts=buildAlerts();
+  const warnCount=alerts.filter(a=>a.type!=='info').length;
+
+  document.getElementById('overview-metrics').innerHTML=`
+    <div class="metric-card"><div class="metric-label">Tổng kênh</div><div class="metric-value">${channels.length}</div><div class="metric-sub">${healthy} kênh khoẻ</div></div>
+    <div class="metric-card"><div class="metric-label">Điểm TB danh mục</div><div class="metric-value" style="color:${avgScore>=60?'var(--green)':avgScore>=40?'var(--amber)':'var(--red)'}">${avgScore}<span style="font-size:14px;color:var(--text2)">/100</span></div><div class="metric-sub">${avgScore>=60?'Ổn định':'Cần chú ý'}</div></div>
+    <div class="metric-card"><div class="metric-label">Tổng followers</div><div class="metric-value">${fmtNum(totalF)}</div><div class="metric-sub">Tất cả kênh</div></div>
+    <div class="metric-card"><div class="metric-label">Cảnh báo</div><div class="metric-value" style="color:${warnCount>0?'var(--red)':'var(--green)'}">${warnCount}</div><div class="metric-sub">${warnCount>0?'Cần xử lý':'Tất cả ổn'}</div></div>
   `;
-  const sorted = [...channels].sort((a,b)=>calcScore(b.data)-calcScore(a.data));
-  document.getElementById('channel-ranking').innerHTML = sorted.map(c=>{
-    const s=calcScore(c.data);
-    const pct=s;
-    const barColor = s>=80?'#639922':s>=60?'#378ADD':s>=40?'#BA7517':'#E24B4A';
-    const delta = c.data.followerDelta>=0?`<span class="trend-up">+${fmtNum(c.data.followerDelta)}</span>`:`<span class="trend-down">${fmtNum(c.data.followerDelta)}</span>`;
-    return `<div class="channel-row">
-      <div><div class="channel-name">${c.name}</div><div class="channel-handle">${c.handle}</div></div>
-      <div><div class="health-bar-wrap"><div class="health-bar" style="width:${pct}%;background:${barColor}"></div></div><div style="font-size:11px;color:var(--color-text-secondary);margin-top:2px">${s}/100</div></div>
-      <div style="font-size:13px">${fmtNum(c.data.followers||0)}<br>${delta}</div>
-      <div style="font-size:13px">${engRate(c.data)}</div>
-      <div style="font-size:13px">${fmtNum(c.data.viewsAvg||0)}</div>
-      <div style="font-size:13px">${c.data.videos||0} video/kỳ</div>
-      <div>${scoreBadge(s)}</div>
-    </div>`;
+
+  const sorted=[...channels].sort((a,b)=>calcScore(latestEntry(b.id))-calcScore(latestEntry(a.id)));
+  document.getElementById('ranking-body').innerHTML=sorted.map(c=>{
+    const d=latestEntry(c.id);const s=calcScore(d);const er=d?engRate(d):0;
+    const delta=d&&d.follower_delta>=0?`<span class="trend-up">+${fmtNum(d.follower_delta)}</span>`:`<span class="trend-down">${fmtNum(d?d.follower_delta:0)}</span>`;
+    return `<tr>
+      <td><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--text2)">${c.handle}</div></td>
+      <td><div class="health-wrap"><div class="hbar-bg"><div class="hbar" style="width:${s}%;background:${barColor(s)}"></div></div><span style="font-size:12px;color:var(--text2);min-width:28px">${s}</span></div></td>
+      <td>${fmtNum(d?d.followers:0)}<br><small>${delta}</small></td>
+      <td>${er}%</td>
+      <td>${d?d.watchtime:0}%</td>
+      <td>${d?d.videos:0}</td>
+      <td><span class="badge badge-${scoreClass(s)}">${scoreLabel(s)}</span></td>
+    </tr>`;
   }).join('');
-  renderEngChart();
+
+  renderEngChart(sorted);
 }
 
-let engChartInst = null;
-function renderEngChart(){
-  const ctx = document.getElementById('engChart');
-  if(!ctx) return;
-  const sorted = [...channels].sort((a,b)=>calcScore(b.data)-calcScore(a.data));
-  const labels = sorted.map(c=>c.name);
-  const data = sorted.map(c=>{
-    const d=c.data;
-    if(!d||!d.viewsAvg) return 0;
-    return +((((d.likes+d.comments*2+d.shares*3)/d.viewsAvg)*100).toFixed(1));
-  });
-  const bgColors = sorted.map(c=>c.color+'CC');
-  if(engChartInst) engChartInst.destroy();
-  engChartInst = new Chart(ctx,{
-    type:'bar',
-    data:{labels,datasets:[{label:'Engagement rate (%)',data,backgroundColor:bgColors,borderRadius:4,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v+'%'},grid:{color:'rgba(128,128,128,.1)'}},x:{grid:{display:false}}}}
-  });
+let engChartInst=null;
+function renderEngChart(sorted){
+  const ctx=document.getElementById('engChart');if(!ctx)return;
+  if(engChartInst)engChartInst.destroy();
+  const labels=sorted.map(c=>c.name);
+  const data=sorted.map(c=>{const d=latestEntry(c.id);return d?engRate(d):0});
+  const colors=sorted.map(c=>c.color+'cc');
+  engChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Engagement rate (%)',data,backgroundColor:colors,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v+'%',color:'#55555f'},grid:{color:'rgba(255,255,255,.05)'}},x:{ticks:{color:'#8b8b96'},grid:{display:false}}}}});
 }
 
+// ─── CHANNELS PAGE ────────────────────────────────────────────────────────────
 function renderChannels(){
-  document.getElementById('channels-detail').innerHTML = channels.map(c=>{
-    const s=calcScore(c.data);
-    const d=c.data;
-    return `<div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="avatar" style="background:${c.color}22;color:${c.color}">${c.name.charAt(0)}</div>
-          <div><div class="channel-name">${c.name}</div><div class="channel-handle">${c.handle} · ${c.category}</div></div>
+  const channels=getChannels();
+  document.getElementById('channels-list').innerHTML=channels.map(c=>{
+    const d=latestEntry(c.id);const s=calcScore(d);
+    return `<div class="ch-card">
+      <div class="ch-header">
+        <div class="ch-info">
+          <div class="ch-avatar" style="background:${c.color}22;color:${c.color}">${c.name[0]}</div>
+          <div><div class="ch-name">${c.name}</div><div class="ch-handle">${c.handle} · ${c.category}</div></div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center">${scoreBadge(s)}<button class="btn" style="font-size:12px;padding:4px 10px" onclick="editChannel(${c.id})"><i class="ti ti-edit" aria-hidden="true"></i></button></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="badge badge-${scoreClass(s)}">${s}/100 ${scoreLabel(s)}</span>
+          <button class="btn" style="padding:6px 10px;font-size:12px" onclick="editEntry(${c.id})">Nhập dữ liệu</button>
+          <button class="btn" style="padding:6px 10px;font-size:12px;color:var(--red);border-color:rgba(255,95,95,.3)" onclick="removeChannel(${c.id})">Xoá</button>
+        </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
-        <div class="metric-card"><div class="label">Followers</div><div class="value" style="font-size:18px">${fmtNum(d.followers||0)}</div><div class="sub">${d.followerDelta>=0?'+':''}${fmtNum(d.followerDelta||0)} kỳ này</div></div>
-        <div class="metric-card"><div class="label">Views avg</div><div class="value" style="font-size:18px">${fmtNum(d.viewsAvg||0)}</div><div class="sub">mỗi video</div></div>
-        <div class="metric-card"><div class="label">Engagement rate</div><div class="value" style="font-size:18px">${engRate(d)}</div><div class="sub">likes+cmt+share/views</div></div>
-        <div class="metric-card"><div class="label">Watch time avg</div><div class="value" style="font-size:18px">${d.watchtime||0}%</div><div class="sub">% hoàn thành video</div></div>
+      <div class="ch-metrics">
+        <div class="ch-metric"><div class="ch-metric-label">Followers</div><div class="ch-metric-value">${fmtNum(d?d.followers:0)}</div><div class="ch-metric-sub">${d&&d.follower_delta>=0?'+':''}${fmtNum(d?d.follower_delta:0)} kỳ này</div></div>
+        <div class="ch-metric"><div class="ch-metric-label">Views avg</div><div class="ch-metric-value">${fmtNum(d?d.views_avg:0)}</div><div class="ch-metric-sub">mỗi video</div></div>
+        <div class="ch-metric"><div class="ch-metric-label">Eng. rate</div><div class="ch-metric-value">${d?engRate(d):0}%</div><div class="ch-metric-sub">likes+cmt+share/views</div></div>
+        <div class="ch-metric"><div class="ch-metric-label">Watch time</div><div class="ch-metric-value">${d?d.watchtime:0}%</div><div class="ch-metric-sub">% hoàn thành video</div></div>
       </div>
-      ${d.note?`<div style="margin-top:10px;font-size:13px;color:var(--color-text-secondary)"><i class="ti ti-note" aria-hidden="true"></i> ${d.note}</div>`:''}
+      ${d&&d.note?`<div style="margin-top:12px;font-size:12px;color:var(--text2);background:var(--bg3);padding:8px 12px;border-radius:6px">📝 ${d.note}</div>`:''}
     </div>`;
   }).join('');
 }
 
+// ─── ALERTS ───────────────────────────────────────────────────────────────────
 function buildAlerts(){
   const alerts=[];
-  channels.forEach(c=>{
-    const d=c.data; const s=calcScore(d);
-    if(s<40) alerts.push({type:'danger',msg:`${c.name}: Điểm sức khoẻ rất thấp (${s}/100) — cần review nội dung ngay`});
-    if(d.followerDelta<0) alerts.push({type:'danger',msg:`${c.name}: Đang mất followers (${fmtNum(d.followerDelta)} kỳ này)`});
-    if(d.watchtime<50) alerts.push({type:'warn',msg:`${c.name}: Watch time thấp (${d.watchtime}%) — hook đầu video cần cải thiện`});
-    if(d.videos<2) alerts.push({type:'warn',msg:`${c.name}: Tần suất đăng bài thấp (${d.videos} video/kỳ)`});
-    const eng=d.viewsAvg>0?(((d.likes+d.comments*2+d.shares*3)/d.viewsAvg)*100):0;
-    if(eng<3) alerts.push({type:'warn',msg:`${c.name}: Engagement rate thấp (${eng.toFixed(1)}%) — xem lại CTA và nội dung`});
-    if(s>=80) alerts.push({type:'info',msg:`${c.name}: Đang rất tốt (${s}/100) — duy trì và scale nội dung`});
+  getChannels().forEach(c=>{
+    const d=latestEntry(c.id);const s=calcScore(d);
+    if(!d){alerts.push({type:'warn',msg:`${c.name}: Chưa có dữ liệu nào được nhập`});return;}
+    if(s<40)alerts.push({type:'danger',msg:`${c.name}: Điểm sức khoẻ rất thấp (${s}/100) — cần review nội dung ngay`});
+    if(d.follower_delta<0)alerts.push({type:'danger',msg:`${c.name}: Đang mất followers (${fmtNum(d.follower_delta)} kỳ này)`});
+    if(d.watchtime<50)alerts.push({type:'warn',msg:`${c.name}: Watch time thấp (${d.watchtime}%) — cần cải thiện hook đầu video`});
+    if(d.videos<2)alerts.push({type:'warn',msg:`${c.name}: Đăng ít bài (${d.videos} video/kỳ) — cần tăng tần suất`});
+    if(engRate(d)<3)alerts.push({type:'warn',msg:`${c.name}: Engagement rate thấp (${engRate(d)}%) — xem lại CTA và nội dung`});
+    if(s>=80)alerts.push({type:'info',msg:`${c.name}: Kênh đang rất tốt (${s}/100) — duy trì và scale nội dung`});
   });
   return alerts;
 }
-
 function renderAlerts(){
   const alerts=buildAlerts();
-  document.getElementById('alert-count-badge').textContent = alerts.filter(a=>a.type!=='info').length>0?` (${alerts.filter(a=>a.type!=='info').length})`:'';
-  document.getElementById('alert-list').innerHTML = alerts.length?alerts.map(a=>`
-    <div class="alert-item ${a.type==='danger'?'alert-danger':a.type==='warn'?'alert-warn':'alert-info'}">
-      <i class="ti ti-${a.type==='danger'?'alert-circle':a.type==='warn'?'alert-triangle':'info-circle'}" style="font-size:16px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>
+  const warns=alerts.filter(a=>a.type!=='info');
+  const badge=document.getElementById('alert-badge');
+  if(warns.length>0){badge.textContent=warns.length;badge.style.display='inline'}else{badge.style.display='none'}
+  document.getElementById('alerts-content').innerHTML=`<div class="card-title">Cảnh báo cần xử lý</div>`+
+    (alerts.length?alerts.map(a=>`<div class="alert-item alert-${a.type}">
+      <div class="status-dot ${a.type==='danger'?'dot-red':a.type==='warn'?'dot-amber':'dot-green'}"></div>
       <span>${a.msg}</span>
-    </div>`).join(''):'<div style="color:var(--color-text-secondary);font-size:14px;padding:1rem 0">Không có cảnh báo nào. Tất cả kênh đang ổn!</div>';
+    </div>`).join(''):'<p style="color:var(--text2);font-size:13px">Không có cảnh báo. Tất cả kênh đang ổn!</p>');
 }
 
-function generateReport(type){
-  const period = document.getElementById('report-period').value;
-  const sorted = [...channels].sort((a,b)=>calcScore(b.data)-calcScore(a.data));
-  const alerts = buildAlerts().filter(a=>a.type!=='info');
-  let txt = `📊 BÁO CÁO SỨC KHOẺ KÊNH TIKTOK\nKỳ: ${period} | ${new Date().toLocaleDateString('vi-VN')}\n${'─'.repeat(40)}\n\n`;
-  txt += `TỔNG QUAN:\n• Tổng kênh quản lý: ${channels.length}\n• Kênh khoẻ (≥60đ): ${sorted.filter(c=>calcScore(c.data)>=60).length}\n• Cảnh báo cần xử lý: ${alerts.length}\n\n`;
-  txt += `XẾP HẠNG KÊNH:\n`;
+// ─── REPORT ───────────────────────────────────────────────────────────────────
+function generateReport(){
+  const period=document.getElementById('rpt-period').value;
+  const detail=document.getElementById('rpt-detail').value;
+  const channels=getChannels();
+  const sorted=[...channels].sort((a,b)=>calcScore(latestEntry(b.id))-calcScore(latestEntry(a.id)));
+  const alerts=buildAlerts().filter(a=>a.type!=='info');
+  let txt=`📊 BÁO CÁO SỨC KHOẺ KÊNH TIKTOK\n`;
+  txt+=`Kỳ: ${period} | ${new Date().toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'})}\n`;
+  txt+=`${'─'.repeat(50)}\n\n`;
+  const healthy=sorted.filter(c=>calcScore(latestEntry(c.id))>=60).length;
+  txt+=`TỔNG QUAN\n• Tổng kênh: ${channels.length} | Kênh khoẻ: ${healthy} | Cảnh báo: ${alerts.length}\n\n`;
+  txt+=`XẾP HẠNG KÊNH\n`;
   sorted.forEach((c,i)=>{
-    const s=calcScore(c.data);
-    txt+=`${i+1}. ${c.name} (${c.handle}) — ${s}/100 | Followers: ${fmtNum(c.data.followers)} | Eng: ${engRate(c.data)} | Watch: ${c.data.watchtime}%\n`;
+    const d=latestEntry(c.id);const s=calcScore(d);
+    txt+=`${i+1}. ${c.name} (${c.handle})\n   Điểm: ${s}/100 | Followers: ${fmtNum(d?d.followers:0)} (${d&&d.follower_delta>=0?'+':''}${fmtNum(d?d.follower_delta:0)}) | Eng: ${d?engRate(d):0}% | Watch time: ${d?d.watchtime:0}%\n`;
+    if(detail==='Đầy đủ'&&d){txt+=`   Views avg: ${fmtNum(d.views_avg)} | Videos: ${d.videos}/kỳ | Likes: ${fmtNum(d.likes)} | Comments: ${fmtNum(d.comments)} | Shares: ${fmtNum(d.shares)}\n`;}
+    if(d&&d.note)txt+=`   📝 ${d.note}\n`;
+    txt+='\n';
   });
-  if(alerts.length){txt+=`\n⚠️ CẦN XỬ LÝ:\n`;alerts.forEach(a=>{txt+=`• ${a.msg}\n`;});}
-  txt+=`\n${'─'.repeat(40)}\nBáo cáo tự động từ TikTok Health Dashboard`;
-  const out=document.getElementById('report-output');
-  out.style.display='block';
-  out.innerHTML=`<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;font-family:var(--font-mono);font-size:12px;white-space:pre-wrap;color:var(--color-text-primary);line-height:1.6">${txt}</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" onclick="copyReport()"><i class="ti ti-copy" aria-hidden="true"></i> Copy</button></div>`;
-  window._reportText=txt;
+  if(alerts.length){txt+=`⚠️ CẦN XỬ LÝ (${alerts.length} vấn đề)\n`;alerts.forEach(a=>{txt+=`• ${a.msg}\n`;});txt+='\n';}
+  txt+=`${'─'.repeat(50)}\nTạo tự động từ TikTok Health Dashboard`;
+  const out=document.getElementById('report-out');
+  out.style.display='block';out.textContent=txt;
+  window._rpt=txt;
+}
+function copyReport(){if(!window._rpt){generateReport();}navigator.clipboard.writeText(window._rpt||'').then(()=>alert('Đã copy báo cáo!')).catch(()=>alert('Không copy được — hãy bôi đen thủ công'));}
+
+// ─── SETUP / CONFIG ───────────────────────────────────────────────────────────
+function saveConfig(){
+  const id=document.getElementById('sheets-id').value.trim();
+  const key=document.getElementById('sheets-api-key').value.trim();
+  if(!id||!key){alert('Vui lòng điền Sheets ID và API Key');return;}
+  saveConfigData({sheetsId:id,apiKey:key});
+  alert('Đã lưu cấu hình! Bấm "Kiểm tra kết nối" để xác nhận.');
+}
+function loadConfigUI(){
+  const cfg=loadConfig();
+  if(cfg.sheetsId)document.getElementById('sheets-id').value=cfg.sheetsId;
+  if(cfg.apiKey)document.getElementById('sheets-api-key').value=cfg.apiKey;
+}
+async function testConnection(){
+  const cfg=loadConfig();
+  const el=document.getElementById('conn-status');
+  if(!cfg.sheetsId||!cfg.apiKey){el.className='conn-badge conn-err';el.textContent='❌ Chưa cấu hình';return;}
+  el.className='conn-badge conn-pending';el.textContent='⏳ Đang kiểm tra...';
+  try{
+    const url=`https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetsId}?key=${cfg.apiKey}`;
+    const r=await fetch(url);
+    if(r.ok){el.className='conn-badge conn-ok';el.textContent='✅ Kết nối thành công';}
+    else{el.className='conn-badge conn-err';el.textContent='❌ Sai ID hoặc API Key';}
+  }catch(e){el.className='conn-badge conn-err';el.textContent='❌ Lỗi kết nối';}
+}
+async function syncFromSheets(){
+  const cfg=loadConfig();
+  if(!cfg.sheetsId||!cfg.apiKey){alert('Chưa cấu hình Google Sheets. Vào tab Cài đặt để thiết lập.');return;}
+  try{
+    const base=`https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetsId}/values`;
+    const [chRes,dataRes]=await Promise.all([
+      fetch(`${base}/Channels!A2:E100?key=${cfg.apiKey}`),
+      fetch(`${base}/Data!A2:K1000?key=${cfg.apiKey}`)
+    ]);
+    if(!chRes.ok||!dataRes.ok){alert('Lỗi khi đọc Sheets. Kiểm tra lại ID, API Key và tên tab.');return;}
+    const chJson=await chRes.json();const dataJson=await dataRes.json();
+    const chRows=chJson.values||[];const dataRows=dataJson.values||[];
+    const channels=chRows.map(r=>({id:Number(r[0]),name:r[1]||'',handle:r[2]||'',category:r[3]||'',color:r[4]||'#7c6aff'})).filter(c=>c.id&&c.name);
+    const entries=dataRows.map(r=>({channel_id:Number(r[0]),period:r[1]||'',followers:Number(r[2])||0,follower_delta:Number(r[3])||0,views_avg:Number(r[4])||0,videos:Number(r[5])||0,likes:Number(r[6])||0,comments:Number(r[7])||0,shares:Number(r[8])||0,watchtime:Number(r[9])||0,note:r[10]||''})).filter(e=>e.channel_id);
+    if(channels.length){saveChannels(channels);}
+    if(entries.length){saveEntries(entries);}
+    document.getElementById('last-sync').textContent='Đồng bộ lần cuối: '+new Date().toLocaleString('vi-VN');
+    renderOverview();alert(`Đồng bộ thành công! ${channels.length} kênh, ${entries.length} bản ghi.`);
+  }catch(e){alert('Lỗi: '+e.message);}
 }
 
-function copyReport(){navigator.clipboard.writeText(window._reportText||'').then(()=>alert('Đã copy báo cáo!')).catch(()=>alert('Không copy được, hãy chọn thủ công'));}
-
-function sendReport(){
-  const period=document.getElementById('report-period').value;
-  sendPrompt(`Hãy phân tích và viết báo cáo sức khoẻ chuyên sâu cho các kênh TikTok sau (kỳ: ${period}):\n${channels.map(c=>`• ${c.name} (${c.handle}): Followers ${fmtNum(c.data.followers)}, tăng ${c.data.followerDelta}, Views avg ${fmtNum(c.data.viewsAvg)}, Eng rate ${engRate(c.data)}, Watch time ${c.data.watchtime}%, ${c.data.videos} video/kỳ. Ghi chú: ${c.data.note||'không có'}`).join('\n')}\n\nHãy: 1) Đánh giá từng kênh, 2) Highlight kênh tốt nhất/kém nhất, 3) Đưa ra 3 khuyến nghị cụ thể cho team content.`);
-}
-
-function switchTab(tab){
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>{b.classList.toggle('active',['overview','channels','alerts','report'][i]===tab)});
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+tab).classList.add('active');
-  if(tab==='overview') renderOverview();
-  if(tab==='channels') renderChannels();
-  if(tab==='alerts') renderAlerts();
-}
-
-function openModal(id){document.getElementById(id).classList.add('open')}
-function closeModal(id){document.getElementById(id).classList.remove('open')}
-document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
-
-function openDataEntry(){
-  const sel=document.getElementById('entry-channel');
-  sel.innerHTML=channels.map(c=>`<option value="${c.id}">${c.name} (${c.handle})</option>`).join('');
-  openModal('data-entry-modal');
-}
-
+// ─── CHANNEL OPS ──────────────────────────────────────────────────────────────
+const PALETTE=['#7c6aff','#22c97a','#f5a623','#4da6ff','#ff5f5f','#e040fb','#26c6da','#ffca28'];
 function addChannel(){
-  const name=document.getElementById('new-name').value.trim();
-  const handle=document.getElementById('new-handle').value.trim();
-  const followers=parseInt(document.getElementById('new-followers').value)||0;
-  const category=document.getElementById('new-category').value;
-  if(!name||!handle){alert('Vui lòng điền tên và handle kênh');return;}
-  channels.push({id:nextId++,name,handle,category,color:COLORS[channels.length%COLORS.length],data:{followers,followerDelta:0,viewsAvg:0,videos:0,likes:0,comments:0,shares:0,watchtime:0,note:''}});
+  const name=document.getElementById('nc-name').value.trim();
+  const handle=document.getElementById('nc-handle').value.trim();
+  const followers=parseInt(document.getElementById('nc-followers').value)||0;
+  const category=document.getElementById('nc-cat').value;
+  if(!name||!handle){alert('Vui lòng điền tên và handle');return;}
+  const channels=getChannels();
+  const id=nextId();
+  channels.push({id,name,handle,category,color:PALETTE[channels.length%PALETTE.length]});
+  saveChannels(channels);
+  const entries=getEntries();
+  entries.push({channel_id:id,period:'Tháng này',followers,follower_delta:0,views_avg:0,videos:0,likes:0,comments:0,shares:0,watchtime:0,note:''});
+  saveEntries(entries);
   closeModal('add-channel-modal');
-  document.getElementById('new-name').value='';document.getElementById('new-handle').value='';document.getElementById('new-followers').value='';
-  document.getElementById('last-update').textContent=new Date().toLocaleString('vi-VN');
-  renderOverview();
+  ['nc-name','nc-handle','nc-followers'].forEach(id=>document.getElementById(id).value='');
+  renderChannels();renderOverview();renderAlerts();
 }
-
+function removeChannel(id){
+  if(!confirm('Xoá kênh này? Dữ liệu đã nhập sẽ mất.'))return;
+  saveChannels(getChannels().filter(c=>c.id!==id));
+  saveEntries(getEntries().filter(e=>e.channel_id!==id));
+  renderChannels();renderOverview();renderAlerts();
+}
+function editEntry(channelId){
+  const sel=document.getElementById('e-channel');
+  sel.innerHTML=getChannels().map(c=>`<option value="${c.id}"${c.id===channelId?' selected':''}>${c.name}</option>`).join('');
+  const d=latestEntry(channelId);
+  if(d){
+    document.getElementById('e-followers').value=d.followers||'';
+    document.getElementById('e-delta').value=d.follower_delta||'';
+    document.getElementById('e-views').value=d.views_avg||'';
+    document.getElementById('e-videos').value=d.videos||'';
+    document.getElementById('e-likes').value=d.likes||'';
+    document.getElementById('e-comments').value=d.comments||'';
+    document.getElementById('e-shares').value=d.shares||'';
+    document.getElementById('e-watchtime').value=d.watchtime||'';
+    document.getElementById('e-note').value=d.note||'';
+  }
+  openModal('entry-modal');
+}
 function saveEntry(){
-  const id=parseInt(document.getElementById('entry-channel').value);
-  const c=channels.find(ch=>ch.id===id);
-  if(!c) return;
-  c.data={
-    followers:parseInt(document.getElementById('entry-followers').value)||c.data.followers,
-    followerDelta:parseInt(document.getElementById('entry-follower-delta').value)||0,
-    viewsAvg:parseInt(document.getElementById('entry-views').value)||0,
-    videos:parseInt(document.getElementById('entry-videos').value)||0,
-    likes:parseInt(document.getElementById('entry-likes').value)||0,
-    comments:parseInt(document.getElementById('entry-comments').value)||0,
-    shares:parseInt(document.getElementById('entry-shares').value)||0,
-    watchtime:parseInt(document.getElementById('entry-watchtime').value)||0,
-    note:document.getElementById('entry-note').value
-  };
-  closeModal('data-entry-modal');
-  document.getElementById('last-update').textContent=new Date().toLocaleString('vi-VN');
-  renderOverview();
-  alert(`Đã lưu dữ liệu cho kênh ${c.name}!`);
+  const channelId=parseInt(document.getElementById('e-channel').value);
+  const period=document.getElementById('e-period').value;
+  const entry={channel_id:channelId,period,followers:parseInt(document.getElementById('e-followers').value)||0,follower_delta:parseInt(document.getElementById('e-delta').value)||0,views_avg:parseInt(document.getElementById('e-views').value)||0,videos:parseInt(document.getElementById('e-videos').value)||0,likes:parseInt(document.getElementById('e-likes').value)||0,comments:parseInt(document.getElementById('e-comments').value)||0,shares:parseInt(document.getElementById('e-shares').value)||0,watchtime:parseInt(document.getElementById('e-watchtime').value)||0,note:document.getElementById('e-note').value};
+  const entries=getEntries().filter(e=>!(e.channel_id===channelId&&e.period===period));
+  entries.push(entry);
+  saveEntries(entries);
+  closeModal('entry-modal');
+  document.getElementById('last-sync').textContent='Cập nhật lần cuối: '+new Date().toLocaleString('vi-VN');
+  renderOverview();renderAlerts();
+  const ch=getChannels().find(c=>c.id===channelId);
+  alert(`Đã lưu dữ liệu cho kênh ${ch?ch.name:''}!`);
 }
 
-function editChannel(id){
-  const c=channels.find(ch=>ch.id===id);
-  if(!c) return;
-  const sel=document.getElementById('entry-channel');
-  sel.innerHTML=channels.map(ch=>`<option value="${ch.id}"${ch.id===id?' selected':''}>${ch.name} (${ch.handle})</option>`).join('');
-  const d=c.data;
-  document.getElementById('entry-followers').value=d.followers||'';
-  document.getElementById('entry-follower-delta').value=d.followerDelta||'';
-  document.getElementById('entry-views').value=d.viewsAvg||'';
-  document.getElementById('entry-videos').value=d.videos||'';
-  document.getElementById('entry-likes').value=d.likes||'';
-  document.getElementById('entry-comments').value=d.comments||'';
-  document.getElementById('entry-shares').value=d.shares||'';
-  document.getElementById('entry-watchtime').value=d.watchtime||'';
-  document.getElementById('entry-note').value=d.note||'';
-  openModal('data-entry-modal');
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+function openModal(id){
+  if(id==='entry-modal'){
+    const sel=document.getElementById('e-channel');
+    sel.innerHTML=getChannels().map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  }
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  document.querySelectorAll('.nav-item')[['overview','channels','alerts','report','_','setup'].indexOf(tab)]?.classList.add('active');
+  if(tab==='overview')renderOverview();
+  if(tab==='channels')renderChannels();
+  if(tab==='alerts')renderAlerts();
+  if(tab==='setup')loadConfigUI();
 }
 
+// ─── INIT ─────────────────────────────────────────────────────────────────────
 renderOverview();
-document.getElementById('last-update').textContent=new Date().toLocaleString('vi-VN');
+renderAlerts();
+document.getElementById('last-sync').textContent='Dữ liệu mẫu — bấm "Đồng bộ Sheets" để tải thật';
 </script>
+</body>
+</html>
