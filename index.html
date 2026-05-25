@@ -1007,23 +1007,88 @@ function saveVideo(){
 async function syncSheets(){
   const cfg=getCfg();
   if(!cfg.sid||!cfg.key){alert('Chưa cấu hình Google Sheets. Vào tab Cài đặt.');return;}
+  const syncBtn=document.querySelector('button[onclick="syncSheets()"]');
+  if(syncBtn){syncBtn.textContent='⏳ Đang đồng bộ...';syncBtn.disabled=true;}
   try{
     const base=`https://sheets.googleapis.com/v4/spreadsheets/${cfg.sid}/values`;
-    const [chRes,vidRes]=await Promise.all([
-      fetch(`${base}/Channels!A2:E500?key=${cfg.key}`),
-      fetch(`${base}/Videos!A2:K5000?key=${cfg.key}`)
-    ]);
-    if(!chRes.ok||!vidRes.ok){alert('Lỗi kết nối Sheets. Kiểm tra lại ID và API Key.');return;}
-    const chJson=await chRes.json();const vidJson=await vidRes.json();
-    const chRows=chJson.values||[];const vidRows=vidJson.values||[];
-    const channels=chRows.map(r=>({id:Number(r[0]),name:r[1]||'',handle:r[2]||'',category:r[3]||'',followers:Number(r[4])||0})).filter(c=>c.id&&c.name);
-    const videos=vidRows.map(r=>({id:Number(r[0]),channel_id:Number(r[1]),title:r[2]||'',date:r[3]||'',duration:Number(r[4])||0,views:Number(r[5])||0,avg_watch:Number(r[6])||0,likes:Number(r[7])||0,comments:Number(r[8])||0,shares:Number(r[9])||0,note:r[10]||''})).filter(v=>v.channel_id&&v.title);
-    if(channels.length)saveCh(channels);
-    if(videos.length)saveVid(videos);
-    document.getElementById('sync-label').textContent='Đồng bộ lúc '+new Date().toLocaleString('vi-VN');
+    // 1. Fetch Channels tab
+    const chRes=await fetch(`${base}/Channels!A2:F200?key=${cfg.key}`);
+    if(!chRes.ok){alert('Không đọc được tab Channels. Kiểm tra lại Sheets ID, API Key và tên tab.');return;}
+    const chJson=await chRes.json();
+    const chRows=chJson.values||[];
+    // Channels columns: id | name | handle | tab_name | category | followers
+    const channels=chRows.map(r=>({
+      id:Number(r[0]),
+      name:r[1]||'',
+      handle:r[2]||'',
+      tab_name:r[3]||'',
+      category:r[4]||'',
+      followers:Number(String(r[5]||'0').replace(/[^0-9]/g,''))||0
+    })).filter(c=>c.id&&c.name&&c.tab_name);
+ 
+    if(!channels.length){alert('Tab Channels trống hoặc sai cấu trúc. Kiểm tra lại.');return;}
+ 
+    // 2. Fetch video tabs for each channel in parallel
+    // Video columns: Tuần | Tên video | Ngày đăng | Thời lượng(s) | Lượt xem | Avg watch(s) | Like | Comment | Share | Completion%
+    const videoFetches=channels.map(c=>
+      fetch(`${base}/${encodeURIComponent(c.tab_name)}!A2:J5000?key=${cfg.key}`)
+        .then(r=>r.json())
+        .then(json=>{
+          const rows=json.values||[];
+          return rows
+            .filter(r=>r[1]&&r[2]) // must have title and date
+            .map((r,i)=>({
+              id:c.id*100000+i+1,
+              channel_id:c.id,
+              week:r[0]||'',
+              title:r[1]||'',
+              date:parseDate(r[2]),
+              duration:parseNum(r[3]),
+              views:parseNum(r[4]),
+              avg_watch:parseNum(r[5]),
+              likes:parseNum(r[6]),
+              comments:parseNum(r[7]),
+              shares:parseNum(r[8]),
+              completion:parseFloat(String(r[9]||'0').replace(',','.'))||0,
+              note:''
+            }));
+        })
+        .catch(()=>[]) // if tab not found, return empty
+    );
+ 
+    const videoArrays=await Promise.all(videoFetches);
+    const allVideos=videoArrays.flat();
+ 
+    saveCh(channels);
+    saveVid(allVideos);
+ 
+    const syncTime='Đồng bộ lúc '+new Date().toLocaleString('vi-VN');
+    document.getElementById('sync-label').textContent=syncTime;
     renderOverview();renderChannels();renderAlerts();updateRptChannelSel();
-    alert(`Đồng bộ thành công! ${channels.length} kênh, ${videos.length} video.`);
-  }catch(e){alert('Lỗi: '+e.message);}
+    alert(`✅ Đồng bộ thành công!\n${channels.length} kênh | ${allVideos.length} video tổng cộng`);
+  }catch(e){
+    alert('Lỗi đồng bộ: '+e.message);
+  }finally{
+    if(syncBtn){syncBtn.textContent='↻ Đồng bộ Sheets';syncBtn.disabled=false;}
+  }
+}
+ 
+function parseNum(val){
+  if(!val&&val!==0)return 0;
+  return parseInt(String(val).replace(/[^0-9]/g,''))||0;
+}
+function parseDate(val){
+  if(!val)return '';
+  // Handle DD/MM/YYYY or YYYY-MM-DD
+  const s=String(val).trim();
+  if(s.includes('/')){
+    const parts=s.split('/');
+    if(parts.length===3){
+      const [d,m,y]=parts;
+      return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+    }
+  }
+  return s;
 }
  
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
@@ -1088,4 +1153,3 @@ updateRptChannelSel();
 </script>
 </body>
 </html>
- 
