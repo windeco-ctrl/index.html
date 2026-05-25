@@ -3,726 +3,1089 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TikTok Channel Health — Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>TikTok Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
 <style>
-:root {
-  --bg: #0d0d0f;
-  --bg2: #141416;
-  --bg3: #1c1c20;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.12);
-  --text: #f0f0f2;
-  --text2: #8b8b96;
-  --text3: #55555f;
-  --accent: #7c6aff;
-  --accent2: #a896ff;
-  --green: #22c97a;
-  --green-bg: rgba(34,201,122,0.1);
-  --amber: #f5a623;
-  --amber-bg: rgba(245,166,35,0.1);
-  --red: #ff5f5f;
-  --red-bg: rgba(255,95,95,0.1);
-  --blue: #4da6ff;
-  --blue-bg: rgba(77,166,255,0.1);
-  --radius: 12px;
-  --radius-sm: 8px;
+:root{
+  --bg:#000;--bg2:#0f0f0f;--bg3:#1a1a1a;--bg4:#222;
+  --border:rgba(248,229,89,.1);--border2:rgba(248,229,89,.2);
+  --text:#fff;--text2:#aaa;--text3:#555;
+  --yellow:#F8E559;--yellow2:#f5d800;--yellow-bg:rgba(248,229,89,.08);
+  --green:#4ade80;--green-bg:rgba(74,222,128,.1);
+  --red:#f87171;--red-bg:rgba(248,113,113,.1);
+  --amber:#fbbf24;--amber-bg:rgba(251,191,36,.1);
+  --radius:12px;--radius-sm:8px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+a{color:var(--yellow);text-decoration:none}
 /* LAYOUT */
 .app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
-.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
-.logo{padding:8px 12px 24px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
-.logo span{color:var(--accent)}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);font-size:14px;color:var(--text2);cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
-.nav-item:hover{background:var(--bg3);color:var(--text)}
-.nav-item.active{background:rgba(124,106,255,.15);color:var(--accent2);font-weight:500}
-.nav-icon{width:16px;height:16px;opacity:.7;flex-shrink:0}
-.sidebar-bottom{margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
-.main{padding:32px;overflow-y:auto}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:20px 12px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{padding:8px 10px 20px;font-size:15px;font-weight:700;letter-spacing:.02em;color:var(--yellow)}
+.logo span{color:#fff;font-weight:300}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--radius-sm);font-size:13px;color:var(--text2);cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif;font-weight:400}
+.nav-item:hover{background:var(--yellow-bg);color:var(--yellow)}
+.nav-item.active{background:var(--yellow-bg);color:var(--yellow);font-weight:500;border-left:2px solid var(--yellow)}
+.nav-icon{width:15px;height:15px;flex-shrink:0;opacity:.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-sep{height:1px;background:var(--border);margin:10px 0}
+.sidebar-bottom{margin-top:auto;padding-top:12px;border-top:1px solid var(--border)}
+.main{padding:28px 32px;overflow-y:auto;min-height:100vh}
 /* HEADER */
-.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px}
-.page-title{font-size:22px;font-weight:500}
-.page-sub{font-size:13px;color:var(--text2);margin-top:2px}
-.btn-group{display:flex;gap:8px}
-.btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:'DM Sans',sans-serif}
-.btn:hover{background:var(--bg2);border-color:var(--border2)}
-.btn-accent{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn-accent:hover{background:#6b59ee;border-color:#6b59ee}
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
+.page-title{font-size:20px;font-weight:600}
+.page-sub{font-size:12px;color:var(--text2);margin-top:3px}
 /* PAGES */
 .page{display:none}.page.active{display:block}
-/* METRICS GRID */
-.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.metric-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
-.metric-label{font-size:12px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
-.metric-value{font-size:26px;font-weight:500;line-height:1}
-.metric-sub{font-size:12px;color:var(--text2);margin-top:6px}
+/* BTN */
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--bg4);border-color:var(--yellow)}
+.btn-primary{background:var(--yellow);color:#000;border-color:var(--yellow)}
+.btn-primary:hover{background:var(--yellow2);border-color:var(--yellow2)}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--text2)}
+.btn-ghost:hover{color:var(--yellow);background:var(--yellow-bg);border-color:var(--border2)}
+/* PERIOD PILLS */
+.period-bar{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius-sm);padding:3px;margin-bottom:20px;width:fit-content;border:1px solid var(--border)}
+.period-pill{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif;transition:all .15s}
+.period-pill.active{background:var(--yellow);color:#000}
+.period-pill:hover:not(.active){color:var(--text);background:var(--bg4)}
+/* METRICS */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.metric-label{font-size:11px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.metric-value{font-size:24px;font-weight:600;line-height:1.1}
+.metric-sub{font-size:11px;color:var(--text2);margin-top:5px}
+.metric-up{color:var(--green)}.metric-down{color:var(--red)}
 /* CARDS */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
-.card-title{font-size:13px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px}
+.card-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
 /* TABLE */
-.channel-table{width:100%;border-collapse:collapse}
-.channel-table th{font-size:11px;color:var(--text3);font-weight:500;text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em}
-.channel-table td{padding:12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text)}
-.channel-table tr:last-child td{border-bottom:none}
-.channel-table tr:hover td{background:rgba(255,255,255,.02)}
-/* HEALTH BAR */
-.health-wrap{display:flex;align-items:center;gap:8px}
-.hbar-bg{flex:1;height:6px;background:var(--bg3);border-radius:20px;overflow:hidden;min-width:60px}
-.hbar{height:6px;border-radius:20px;transition:width .5s}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:11px;color:var(--text3);font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.tbl td{padding:11px 10px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(248,229,89,.03)}
 /* BADGE */
-.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px}
-.badge-great{background:var(--green-bg);color:var(--green)}
-.badge-good{background:var(--blue-bg);color:var(--blue)}
-.badge-ok{background:var(--amber-bg);color:var(--amber)}
-.badge-bad{background:var(--red-bg);color:var(--red)}
-/* CHANNEL DETAIL */
-.channels-grid{display:grid;gap:12px}
-.ch-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
-.ch-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow)}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-amber{background:var(--amber-bg);color:var(--amber)}
+/* CHANNEL CARDS */
+.channel-grid{display:grid;gap:10px}
+.ch-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;cursor:pointer;transition:border-color .15s}
+.ch-card:hover{border-color:var(--yellow)}
+.ch-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .ch-info{display:flex;align-items:center;gap:12px}
-.ch-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;flex-shrink:0}
-.ch-name{font-size:15px;font-weight:500}
+.ch-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.ch-name{font-size:15px;font-weight:600}
 .ch-handle{font-size:12px;color:var(--text2);margin-top:1px}
-.ch-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
-.ch-metric{background:var(--bg3);border-radius:var(--radius-sm);padding:12px}
-.ch-metric-label{font-size:11px;color:var(--text2);margin-bottom:4px}
-.ch-metric-value{font-size:18px;font-weight:500}
-.ch-metric-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.ch-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.ch-stat{background:var(--bg3);border-radius:var(--radius-sm);padding:10px 12px}
+.ch-stat-label{font-size:10px;color:var(--text2);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.ch-stat-value{font-size:16px;font-weight:600}
+/* VIDEO TABLE */
+.video-table-wrap{overflow-x:auto}
+/* CHART */
+.chart-wrap{position:relative;height:240px}
 /* ALERTS */
-.alert-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);margin-bottom:8px;font-size:13px}
-.alert-danger{background:var(--red-bg);border:1px solid rgba(255,95,95,.2);color:#ffb3b3}
-.alert-warn{background:var(--amber-bg);border:1px solid rgba(245,166,35,.2);color:#ffd180}
-.alert-info{background:var(--green-bg);border:1px solid rgba(34,201,122,.2);color:#80ffbb}
+.alert-ch-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px}
+.alert-ch-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;transition:background .15s}
+.alert-ch-header:hover{background:var(--yellow-bg)}
+.alert-ch-title{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500}
+.alert-ch-body{padding:12px 18px 16px;border-top:1px solid var(--border);display:none}
+.alert-ch-body.open{display:block}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);margin-bottom:6px;font-size:13px}
+.alert-danger{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);color:#fca5a5}
+.alert-warn{background:var(--amber-bg);border:1px solid rgba(251,191,36,.2);color:#fde68a}
+.alert-info{background:var(--green-bg);border:1px solid rgba(74,222,128,.2);color:#86efac}
 /* REPORT */
-.report-output{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;white-space:pre-wrap;line-height:1.8;color:var(--text2);margin-top:16px}
-/* SETUP PAGE */
-.setup-step{display:flex;gap:16px;margin-bottom:24px}
-.step-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.step-content h3{font-size:14px;font-weight:500;margin-bottom:6px}
-.step-content p,.step-content li{font-size:13px;color:var(--text2);line-height:1.7}
-.step-content ul{padding-left:16px}
-.code-block{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-top:8px;color:var(--accent2);line-height:1.8}
-/* CONFIG INPUT */
-.config-row{display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap}
-.form-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px}
-.form-group label{font-size:12px;color:#aaaab8;font-weight:500;letter-spacing:.01em}
-.form-group input,.form-group select,.form-group textarea{background:#28283a;border:1.5px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);padding:11px 13px;color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;width:100%;transition:border-color .15s}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);background:#2c2c42}
+.report-preview{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:20px;font-size:13px;line-height:1.8;color:var(--text);max-height:500px;overflow-y:auto;margin-top:14px}
 /* MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
 .modal-overlay.open{display:flex}
-.modal{background:#1e1e26;border:1.5px solid rgba(255,255,255,.2);border-radius:var(--radius);padding:28px;width:540px;max-width:95vw;max-height:88vh;overflow-y:auto}
-.modal-title{font-size:17px;font-weight:600;margin-bottom:20px;color:#fff;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:14px}
-.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
-.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-/* STATUS DOT */
-.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.dot-red{background:var(--red)}.dot-amber{background:var(--amber)}.dot-green{background:var(--green)}
-/* CHART WRAPPER */
-.chart-wrap{position:relative;height:220px;margin-top:4px}
-/* TREND */
-.trend-up{color:var(--green)}.trend-down{color:var(--red)}.trend-flat{color:var(--text2)}
-/* LOADING */
-.loading{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:13px;padding:24px 0}
-.spinner{width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-/* CONNECTION STATUS */
+.modal{background:#111;border:1px solid var(--border2);border-radius:var(--radius);padding:24px;width:560px;max-width:95vw;max-height:88vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:18px;color:var(--yellow)}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:11px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.form-group input,.form-group select,.form-group textarea{background:#1c1c1c;border:1px solid rgba(248,229,89,.2);border-radius:var(--radius-sm);padding:10px 12px;color:#fff;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;width:100%}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--yellow)}
+.form-group input::placeholder{color:#444}
+.form-group select option{background:#1c1c1c;color:#fff}
+.form-group input[type=number]::-webkit-inner-spin-button{opacity:.4}
+/* SETUP */
+.setup-step{display:flex;gap:14px;margin-bottom:20px}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--yellow);color:#000;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body h3{font-size:13px;font-weight:600;margin-bottom:5px}
+.step-body p,.step-body li{font-size:12px;color:var(--text2);line-height:1.7}
+.step-body ul{padding-left:14px;margin-top:4px}
+.code{font-family:'DM Mono',monospace;font-size:11px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--yellow);margin-top:6px;line-height:1.8;overflow-x:auto}
+/* CONN */
 .conn-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 10px;border-radius:20px}
 .conn-ok{background:var(--green-bg);color:var(--green)}
 .conn-err{background:var(--red-bg);color:var(--red)}
-.conn-pending{background:var(--amber-bg);color:var(--amber)}
+.conn-pend{background:var(--amber-bg);color:var(--amber)}
+/* DOT */
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dot-red{background:var(--red)}.dot-amber{background:var(--amber)}.dot-green{background:var(--green)}
+/* DETAIL VIEW */
+.detail-back{display:flex;align-items:center;gap:8px;color:var(--text2);font-size:13px;cursor:pointer;margin-bottom:18px;background:none;border:none;font-family:'Inter',sans-serif}
+.detail-back:hover{color:var(--yellow)}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+/* TOGGLE */
+.toggle-arrow{transition:transform .2s}
+.toggle-arrow.open{transform:rotate(180deg)}
+/* CUSTOM DATE */
+.custom-date-row{display:none;gap:8px;margin-bottom:16px;align-items:center}
+.custom-date-row.show{display:flex}
+.custom-date-row input{background:#1c1c1c;border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;color:#fff;font-size:12px;font-family:'Inter',sans-serif;outline:none}
+.custom-date-row input:focus{border-color:var(--yellow)}
 </style>
 </head>
 <body>
 <div class="app">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="logo">Tik<span>Health</span></div>
-    <button class="nav-item active" onclick="switchTab('overview')">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Tổng quan
+<aside class="sidebar">
+  <div class="logo">Tik<span>Track</span></div>
+  <button class="nav-item active" onclick="nav('overview')">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Tổng quan
+  </button>
+  <button class="nav-item" onclick="nav('channels')">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Các kênh
+  </button>
+  <button class="nav-item" onclick="nav('alerts')">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Cảnh báo <span id="alert-badge" style="margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;display:none"></span>
+  </button>
+  <button class="nav-item" onclick="nav('report')">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Báo cáo
+  </button>
+  <div class="sidebar-bottom">
+    <button class="nav-item" onclick="nav('setup')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      Cài đặt
     </button>
-    <button class="nav-item" onclick="switchTab('channels')">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Các kênh
-    </button>
-    <button class="nav-item" onclick="switchTab('alerts')">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      Cảnh báo <span id="alert-badge" style="margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;display:none"></span>
-    </button>
-    <button class="nav-item" onclick="switchTab('report')">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      Báo cáo
-    </button>
-    <div class="sidebar-bottom">
-      <button class="nav-item" onclick="switchTab('setup')">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-        Cài đặt
-      </button>
+  </div>
+</aside>
+ 
+<main class="main">
+ 
+<!-- OVERVIEW -->
+<div id="page-overview" class="page active">
+  <div class="page-header">
+    <div><div class="page-title">Tổng quan</div><div class="page-sub" id="sync-label">Dữ liệu mẫu</div></div>
+    <div class="btn-group">
+      <button class="btn" onclick="syncSheets()">↻ Đồng bộ Sheets</button>
+      <button class="btn btn-primary" onclick="openModal('modal-video')">+ Nhập video</button>
     </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- OVERVIEW -->
-    <div id="page-overview" class="page active">
-      <div class="page-header">
-        <div>
-          <div class="page-title">Tổng quan</div>
-          <div class="page-sub" id="last-sync">Chưa đồng bộ</div>
-        </div>
-        <div class="btn-group">
-          <button class="btn" onclick="syncFromSheets()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-            Đồng bộ Sheets
-          </button>
-          <button class="btn btn-accent" onclick="openModal('entry-modal')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nhập dữ liệu
-          </button>
-        </div>
-      </div>
-      <div class="metrics-grid" id="overview-metrics"></div>
-      <div class="card">
-        <div class="card-title">Xếp hạng sức khoẻ kênh</div>
-        <table class="channel-table" id="ranking-table">
-          <thead><tr>
-            <th>Kênh</th><th>Sức khoẻ</th><th>Followers</th>
-            <th>Eng. Rate</th><th>Watch time</th><th>Video/kỳ</th><th>Trạng thái</th>
-          </tr></thead>
-          <tbody id="ranking-body"></tbody>
-        </table>
-      </div>
-      <div class="card">
-        <div class="card-title">Engagement rate so sánh</div>
-        <div class="chart-wrap"><canvas id="engChart" role="img" aria-label="Biểu đồ engagement rate các kênh"></canvas></div>
-      </div>
+  </div>
+  <div class="period-bar" id="ov-period-bar">
+    <button class="period-pill active" onclick="setPeriod('overview',7,this)">7 ngày</button>
+    <button class="period-pill" onclick="setPeriod('overview',28,this)">28 ngày</button>
+    <button class="period-pill" onclick="setPeriod('overview',60,this)">60 ngày</button>
+    <button class="period-pill" onclick="setPeriod('overview',365,this)">365 ngày</button>
+    <button class="period-pill" onclick="setPeriod('overview','custom',this)">Tuỳ chỉnh</button>
+  </div>
+  <div class="custom-date-row" id="ov-custom">
+    <span style="font-size:12px;color:var(--text2)">Từ</span>
+    <input type="date" id="ov-from">
+    <span style="font-size:12px;color:var(--text2)">đến</span>
+    <input type="date" id="ov-to">
+    <button class="btn btn-sm" onclick="applyCustom('overview')">Áp dụng</button>
+  </div>
+  <div class="metrics-grid" id="ov-metrics"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div class="card">
+      <div class="card-title">Lượt xem theo kênh</div>
+      <div class="chart-wrap"><canvas id="chart-views" role="img" aria-label="Lượt xem theo kênh"></canvas></div>
     </div>
-
-    <!-- CHANNELS -->
-    <div id="page-channels" class="page">
-      <div class="page-header">
-        <div><div class="page-title">Tất cả kênh</div><div class="page-sub">Chi tiết từng kênh</div></div>
-        <div class="btn-group">
-          <button class="btn btn-accent" onclick="openModal('add-channel-modal')">+ Thêm kênh</button>
-        </div>
-      </div>
-      <div id="channels-list"></div>
+    <div class="card">
+      <div class="card-title">Engagement Rate theo kênh</div>
+      <div class="chart-wrap"><canvas id="chart-eng" role="img" aria-label="Engagement rate theo kênh"></canvas></div>
     </div>
-
-    <!-- ALERTS -->
-    <div id="page-alerts" class="page">
-      <div class="page-header">
-        <div><div class="page-title">Cảnh báo</div><div class="page-sub">Vấn đề cần xử lý ngay</div></div>
-      </div>
-      <div class="card" id="alerts-content"></div>
-    </div>
-
-    <!-- REPORT -->
-    <div id="page-report" class="page">
-      <div class="page-header">
-        <div><div class="page-title">Xuất báo cáo</div><div class="page-sub">Tạo và chia sẻ báo cáo</div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Tạo báo cáo</div>
-        <div class="config-row">
-          <div class="form-group"><label>Kỳ báo cáo</label>
-            <select id="rpt-period"><option>Tuần này</option><option>Tuần trước</option><option>Tháng này</option><option>Tháng trước</option></select>
-          </div>
-          <div class="form-group"><label>Mức độ chi tiết</label>
-            <select id="rpt-detail"><option>Tóm tắt</option><option>Đầy đủ</option></select>
-          </div>
-          <div style="display:flex;gap:8px;align-items:flex-end;padding-bottom:1px">
-            <button class="btn" onclick="generateReport()">Tạo báo cáo</button>
-            <button class="btn btn-accent" onclick="copyReport()">Copy</button>
-          </div>
-        </div>
-        <div id="report-out" class="report-output" style="display:none"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Hướng dẫn gửi báo cáo</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.8">
-          <p>Sau khi tạo báo cáo:</p>
-          <ul style="margin-top:8px;padding-left:16px">
-            <li>Bấm <strong style="color:var(--text)">Copy</strong> → paste vào Slack, Zalo, hoặc email</li>
-            <li>Hoặc vào Google Sheets → tab <em>Reports</em> — dữ liệu đã tự đồng bộ</li>
-            <li>Lên lịch nhắc nhở Google Calendar vào mỗi thứ Hai để nhập số liệu tuần</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- SETUP -->
-    <div id="page-setup" class="page">
-      <div class="page-header">
-        <div><div class="page-title">Cài đặt kết nối</div><div class="page-sub">Kết nối Google Sheets làm database</div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Trạng thái kết nối</div>
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-          <span id="conn-status" class="conn-badge conn-pending">⏳ Chưa cấu hình</span>
-          <button class="btn" onclick="testConnection()">Kiểm tra kết nối</button>
-        </div>
-        <div class="form-group" style="margin-bottom:12px">
-          <label>Google Sheets ID <span style="color:var(--text2)">(lấy từ URL của Sheets)</span></label>
-          <input type="text" id="sheets-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms" />
-        </div>
-        <div class="form-group" style="margin-bottom:16px">
-          <label>Google Sheets API Key</label>
-          <input type="password" id="sheets-api-key" placeholder="AIzaSy..." />
-        </div>
-        <button class="btn btn-accent" onclick="saveConfig()">Lưu cấu hình</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Hướng dẫn cài đặt Google Sheets (5 bước)</div>
-        <div class="setup-step">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <h3>Tạo Google Sheet mới</h3>
-            <p>Mở <a href="https://sheets.google.com" target="_blank" style="color:var(--accent2)">sheets.google.com</a> → tạo spreadsheet mới. Đặt tên: <em>TikTok Dashboard</em></p>
-          </div>
-        </div>
-        <div class="setup-step">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <h3>Tạo 2 tab theo cấu trúc này</h3>
-            <p>Tab 1: <strong style="color:var(--text)">Channels</strong> — thêm các cột:</p>
-            <div class="code-block">id | name | handle | category | color</div>
-            <p style="margin-top:8px">Tab 2: <strong style="color:var(--text)">Data</strong> — thêm các cột:</p>
-            <div class="code-block">channel_id | period | followers | follower_delta | views_avg | videos | likes | comments | shares | watchtime | note</div>
-          </div>
-        </div>
-        <div class="setup-step">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <h3>Lấy Sheets ID</h3>
-            <p>Nhìn vào URL của Google Sheet:<br>
-            <code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent2)">https://docs.google.com/spreadsheets/d/<strong style="color:var(--green)">ĐÂY_LÀ_SHEETS_ID</strong>/edit</code></p>
-          </div>
-        </div>
-        <div class="setup-step">
-          <div class="step-num">4</div>
-          <div class="step-content">
-            <h3>Tạo Google Sheets API Key</h3>
-            <ul>
-              <li>Vào <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent2)">console.cloud.google.com</a></li>
-              <li>Tạo project mới → bật <em>Google Sheets API</em></li>
-              <li>Vào <em>Credentials</em> → tạo <em>API Key</em></li>
-              <li>Copy API Key dán vào ô bên trên</li>
-            </ul>
-          </div>
-        </div>
-        <div class="setup-step">
-          <div class="step-num">5</div>
-          <div class="step-content">
-            <h3>Chia sẻ Sheet (quan trọng)</h3>
-            <p>Trong Google Sheet → Share → chọn <em>"Anyone with the link can view"</em></p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Deploy lên web (Vercel — miễn phí)</div>
-        <div class="setup-step">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <h3>Upload file lên GitHub</h3>
-            <ul>
-              <li>Vào <a href="https://github.com" target="_blank" style="color:var(--accent2)">github.com</a> → đăng ký/đăng nhập</li>
-              <li>Tạo repository mới, tên: <code style="font-family:'DM Mono',monospace;color:var(--accent2)">tiktok-dashboard</code></li>
-              <li>Upload file <code style="font-family:'DM Mono',monospace;color:var(--accent2)">index.html</code> vào repo</li>
-            </ul>
-          </div>
-        </div>
-        <div class="setup-step">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <h3>Deploy lên Vercel</h3>
-            <ul>
-              <li>Vào <a href="https://vercel.com" target="_blank" style="color:var(--accent2)">vercel.com</a> → đăng nhập bằng GitHub</li>
-              <li>Bấm <em>New Project</em> → chọn repo <code style="font-family:'DM Mono',monospace;color:var(--accent2)">tiktok-dashboard</code></li>
-              <li>Bấm <em>Deploy</em> — xong! Web sẽ có địa chỉ kiểu <code style="font-family:'DM Mono',monospace;color:var(--accent2)">tiktok-dashboard.vercel.app</code></li>
-            </ul>
-          </div>
-        </div>
-        <div class="setup-step">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <h3>Cập nhật sau này</h3>
-            <p>Chỉ cần upload file <code style="font-family:'DM Mono',monospace;color:var(--accent2)">index.html</code> mới lên GitHub — Vercel tự deploy trong 30 giây.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </main>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-title">Xu hướng lượt xem (đường)</div>
+    <div class="chart-wrap" style="height:200px"><canvas id="chart-trend" role="img" aria-label="Xu hướng lượt xem"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Danh sách kênh</div>
+    <table class="tbl">
+      <thead><tr><th>Kênh</th><th>Followers</th><th>Lượt xem</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Eng. Rate</th><th>Watch Rate</th><th>Completion</th></tr></thead>
+      <tbody id="ov-table"></tbody>
+    </table>
+  </div>
 </div>
-
+ 
+<!-- CHANNELS -->
+<div id="page-channels" class="page">
+  <div id="channels-list-view">
+    <div class="page-header">
+      <div><div class="page-title">Các kênh</div><div class="page-sub">Quản lý và xem chi tiết từng kênh</div></div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="openModal('modal-add-ch')">+ Thêm kênh</button>
+      </div>
+    </div>
+    <div class="channel-grid" id="channels-grid"></div>
+  </div>
+  <div id="channels-detail-view" style="display:none">
+    <button class="detail-back" onclick="showChannelList()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Quay lại danh sách
+    </button>
+    <div id="channel-detail-content"></div>
+  </div>
+</div>
+ 
+<!-- ALERTS -->
+<div id="page-alerts" class="page">
+  <div class="page-header">
+    <div><div class="page-title">Cảnh báo</div><div class="page-sub">Click vào từng kênh để xem chi tiết</div></div>
+  </div>
+  <div id="alerts-list"></div>
+</div>
+ 
+<!-- REPORT -->
+<div id="page-report" class="page">
+  <div class="page-header">
+    <div><div class="page-title">Báo cáo</div><div class="page-sub">Xuất báo cáo chi tiết</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Tuỳ chọn báo cáo</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Kênh</label>
+        <select id="rpt-channel"><option value="all">Tất cả kênh</option></select>
+      </div>
+      <div class="form-group">
+        <label>Kỳ báo cáo</label>
+        <select id="rpt-period" onchange="toggleRptCustom()">
+          <option value="7">7 ngày</option>
+          <option value="28">28 ngày</option>
+          <option value="60">60 ngày</option>
+          <option value="365">365 ngày</option>
+          <option value="custom">Tuỳ chỉnh</option>
+        </select>
+      </div>
+    </div>
+    <div class="custom-date-row" id="rpt-custom">
+      <span style="font-size:12px;color:var(--text2)">Từ</span>
+      <input type="date" id="rpt-from">
+      <span style="font-size:12px;color:var(--text2)">đến</span>
+      <input type="date" id="rpt-to">
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="generateReport()">Tạo báo cáo</button>
+      <button class="btn" onclick="downloadWord()">⬇ Tải báo cáo (.docx)</button>
+    </div>
+    <div id="rpt-preview" style="display:none">
+      <div class="card" style="margin-top:14px">
+        <div class="card-title">Biểu đồ xu hướng</div>
+        <div class="chart-wrap"><canvas id="rpt-chart" role="img" aria-label="Biểu đồ báo cáo"></canvas></div>
+      </div>
+      <div class="report-preview" id="rpt-text"></div>
+    </div>
+  </div>
+</div>
+ 
+<!-- SETUP -->
+<div id="page-setup" class="page">
+  <div class="page-header"><div><div class="page-title">Cài đặt</div><div class="page-sub">Kết nối Google Sheets làm database</div></div></div>
+  <div class="card">
+    <div class="card-title">Trạng thái kết nối</div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+      <span id="conn-status" class="conn-badge conn-pend">⏳ Chưa cấu hình</span>
+      <button class="btn btn-sm" onclick="testConn()">Kiểm tra</button>
+    </div>
+    <div class="form-group" style="margin-bottom:10px">
+      <label>Google Sheets ID</label>
+      <input type="text" id="cfg-sid" placeholder="Lấy từ URL của Google Sheet">
+    </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label>API Key</label>
+      <input type="password" id="cfg-key" placeholder="AIzaSy...">
+    </div>
+    <button class="btn btn-primary" onclick="saveConfig()">Lưu cấu hình</button>
+  </div>
+  <div class="card">
+    <div class="card-title">Hướng dẫn cài đặt Google Sheets</div>
+    <div class="setup-step"><div class="step-num">1</div><div class="step-body"><h3>Tạo Google Sheet mới</h3><p>Vào <a href="https://sheets.google.com" target="_blank">sheets.google.com</a> → tạo spreadsheet tên <em>TikTok Dashboard</em></p></div></div>
+    <div class="setup-step"><div class="step-num">2</div><div class="step-body"><h3>Tạo 3 tab</h3><p>Tab <strong>Channels</strong>:</p><div class="code">id | name | handle | category | color</div><p style="margin-top:8px">Tab <strong>Videos</strong>:</p><div class="code">channel_id | title | date | duration | views | avg_watch | likes | comments | shares | completion | note</div><p style="margin-top:8px">Tab <strong>Metrics</strong> (tuỳ chọn, lưu theo kỳ):</p><div class="code">channel_id | date | followers | views | likes | comments | shares</div></div></div>
+    <div class="setup-step"><div class="step-num">3</div><div class="step-body"><h3>Lấy Sheets ID</h3><p>URL: <code style="font-size:11px;color:var(--yellow)">docs.google.com/spreadsheets/d/<strong>ID_Ở_ĐÂY</strong>/edit</code></p></div></div>
+    <div class="setup-step"><div class="step-num">4</div><div class="step-body"><h3>Tạo API Key</h3><ul><li>Vào <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a></li><li>Bật Google Sheets API → Credentials → tạo API Key</li></ul></div></div>
+    <div class="setup-step"><div class="step-num">5</div><div class="step-body"><h3>Chia sẻ Sheet</h3><p>Share → <em>"Anyone with the link can view"</em></p></div></div>
+  </div>
+</div>
+ 
+</main>
+</div>
+ 
 <!-- MODAL: Add Channel -->
-<div class="modal-overlay" id="add-channel-modal">
+<div class="modal-overlay" id="modal-add-ch">
   <div class="modal">
     <div class="modal-title">Thêm kênh mới</div>
-    <div class="form-row-2">
-      <div class="form-group"><label>Tên nghệ sĩ</label><input type="text" id="nc-name" placeholder="VD: Sơn Tùng MTP"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Tên nghệ sĩ / Kênh</label><input type="text" id="nc-name" placeholder="VD: Sơn Tùng MTP"></div>
       <div class="form-group"><label>TikTok Handle</label><input type="text" id="nc-handle" placeholder="@username"></div>
     </div>
-    <div class="form-row-2">
+    <div class="form-row">
       <div class="form-group"><label>Followers hiện tại</label><input type="number" id="nc-followers" placeholder="0"></div>
       <div class="form-group"><label>Thể loại</label>
-        <select id="nc-cat"><option>Âm nhạc</option><option>Hài hước</option><option>Lifestyle</option><option>Beauty</option><option>Acting</option><option>Khác</option></select>
+        <select id="nc-cat" onchange="toggleCatOther()">
+          <option>Giải trí</option><option>Giáo dục</option><option>Lifestyle</option>
+          <option>Truyền cảm hứng</option><option>Bán hàng</option><option>Tin tức</option><option>Khác</option>
+        </select>
       </div>
     </div>
+    <div class="form-group" id="nc-other-wrap" style="display:none;margin-bottom:10px">
+      <label>Nhập thể loại</label><input type="text" id="nc-other" placeholder="Thể loại của bạn...">
+    </div>
     <div class="modal-footer">
-      <button class="btn" onclick="closeModal('add-channel-modal')">Huỷ</button>
-      <button class="btn btn-accent" onclick="addChannel()">Thêm kênh</button>
+      <button class="btn" onclick="closeModal('modal-add-ch')">Huỷ</button>
+      <button class="btn btn-primary" onclick="addChannel()">Thêm kênh</button>
     </div>
   </div>
 </div>
-
-<!-- MODAL: Data Entry -->
-<div class="modal-overlay" id="entry-modal">
+ 
+<!-- MODAL: Add Video -->
+<div class="modal-overlay" id="modal-video">
   <div class="modal">
-    <div class="modal-title">Nhập dữ liệu kênh</div>
-    <div class="form-row-2">
-      <div class="form-group"><label>Kênh</label><select id="e-channel"></select></div>
-      <div class="form-group"><label>Kỳ</label>
-        <select id="e-period"><option>Tuần này</option><option>Tuần trước</option><option>Tháng này</option><option>Tháng trước</option></select>
-      </div>
+    <div class="modal-title">Nhập số liệu video</div>
+    <div class="form-row">
+      <div class="form-group"><label>Kênh</label><select id="v-channel"></select></div>
+      <div class="form-group"><label>Tên video</label><input type="text" id="v-title" placeholder="Tiêu đề video"></div>
     </div>
-    <div class="form-row-2">
-      <div class="form-group"><label>Followers tổng</label><input type="number" id="e-followers" placeholder="0"></div>
-      <div class="form-group"><label>Tăng/giảm follower</label><input type="number" id="e-delta" placeholder="±0"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Ngày đăng</label><input type="date" id="v-date"></div>
+      <div class="form-group"><label>Thời lượng (giây)</label><input type="number" id="v-duration" placeholder="60"></div>
     </div>
-    <div class="form-row-2">
-      <div class="form-group"><label>Views avg / video</label><input type="number" id="e-views" placeholder="0"></div>
-      <div class="form-group"><label>Số video đăng</label><input type="number" id="e-videos" placeholder="0"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Lượt xem</label><input type="number" id="v-views" placeholder="0"></div>
+      <div class="form-group"><label>Avg Watch Time (giây)</label><input type="number" id="v-avgwatch" placeholder="0"></div>
     </div>
-    <div class="form-row-2">
-      <div class="form-group"><label>Likes avg / video</label><input type="number" id="e-likes" placeholder="0"></div>
-      <div class="form-group"><label>Comments avg / video</label><input type="number" id="e-comments" placeholder="0"></div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Likes</label><input type="number" id="v-likes" placeholder="0"></div>
+      <div class="form-group"><label>Comments</label><input type="number" id="v-comments" placeholder="0"></div>
+      <div class="form-group"><label>Shares</label><input type="number" id="v-shares" placeholder="0"></div>
     </div>
-    <div class="form-row-2">
-      <div class="form-group"><label>Shares avg / video</label><input type="number" id="e-shares" placeholder="0"></div>
-      <div class="form-group"><label>Watch time avg (%)</label><input type="number" id="e-watchtime" placeholder="0" max="100"></div>
+    <div class="form-group" style="margin-bottom:10px">
+      <label>Ghi chú</label><input type="text" id="v-note" placeholder="VD: viral, collab, ads...">
     </div>
-    <div class="form-group" style="margin-bottom:4px"><label>Ghi chú</label><input type="text" id="e-note" placeholder="VD: ra album mới, viral trend..."></div>
     <div class="modal-footer">
-      <button class="btn" onclick="closeModal('entry-modal')">Huỷ</button>
-      <button class="btn btn-accent" onclick="saveEntry()">Lưu dữ liệu</button>
+      <button class="btn" onclick="closeModal('modal-video')">Huỷ</button>
+      <button class="btn btn-primary" onclick="saveVideo()">Lưu</button>
     </div>
   </div>
 </div>
-
+ 
 <script>
-// ─── CONFIG (lưu localStorage) ───────────────────────────────────────────────
-const CFG_KEY = 'tikhealth_config';
-const DATA_KEY = 'tikhealth_data';
-const CHAN_KEY = 'tikhealth_channels';
-
-function loadConfig(){return JSON.parse(localStorage.getItem(CFG_KEY)||'{}')}
-function saveConfigData(cfg){localStorage.setItem(CFG_KEY,JSON.stringify(cfg))}
-
-// ─── DEFAULT DATA ────────────────────────────────────────────────────────────
-const DEFAULT_CHANNELS = [];
-const DEFAULT_DATA = [];
-
-function getChannels(){return JSON.parse(localStorage.getItem(CHAN_KEY)||'null')||DEFAULT_CHANNELS}
-function getEntries(){return JSON.parse(localStorage.getItem(DATA_KEY)||'null')||DEFAULT_DATA}
-function saveChannels(ch){localStorage.setItem(CHAN_KEY,JSON.stringify(ch))}
-function saveEntries(en){localStorage.setItem(DATA_KEY,JSON.stringify(en))}
-
-let nextId = () => Math.max(0,...getChannels().map(c=>c.id))+1;
-
+// ─── STORAGE ──────────────────────────────────────────────────────────────────
+const K_CH='tt_channels',K_VID='tt_videos',K_CFG='tt_config';
+const getCh=()=>JSON.parse(localStorage.getItem(K_CH)||'[]');
+const getVid=()=>JSON.parse(localStorage.getItem(K_VID)||'[]');
+const getCfg=()=>JSON.parse(localStorage.getItem(K_CFG)||'{}');
+const saveCh=d=>localStorage.setItem(K_CH,JSON.stringify(d));
+const saveVid=d=>localStorage.setItem(K_VID,JSON.stringify(d));
+const saveCfg=d=>localStorage.setItem(K_CFG,JSON.stringify(d));
+ 
+// ─── PERIOD ───────────────────────────────────────────────────────────────────
+let ovPeriod={days:7,from:null,to:null};
+function setPeriod(page,val,btn){
+  const bar=document.getElementById(page==='overview'?'ov-period-bar':'rpt-period');
+  document.querySelectorAll('#ov-period-bar .period-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const customRow=document.getElementById('ov-custom');
+  if(val==='custom'){customRow.classList.add('show');}
+  else{customRow.classList.remove('show');ovPeriod={days:val,from:null,to:null};renderOverview();}
+}
+function applyCustom(page){
+  const from=document.getElementById('ov-from').value;
+  const to=document.getElementById('ov-to').value;
+  if(!from||!to){alert('Chọn ngày bắt đầu và kết thúc');return;}
+  ovPeriod={days:'custom',from:new Date(from),to:new Date(to)};
+  renderOverview();
+}
+function toggleRptCustom(){
+  const v=document.getElementById('rpt-period').value;
+  document.getElementById('rpt-custom').className='custom-date-row'+(v==='custom'?' show':'');
+}
+ 
+function filterByPeriod(videos,period){
+  if(!videos.length) return videos;
+  const now=new Date();
+  let from,to;
+  if(period.days==='custom'){from=period.from;to=period.to;}
+  else{to=now;from=new Date(now);from.setDate(from.getDate()-period.days);}
+  return videos.filter(v=>{
+    const d=new Date(v.date);
+    return d>=from&&d<=to;
+  });
+}
+ 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
-function fmtNum(n){
-  n=Number(n)||0;
-  if(n>=1000000) return (n/1000000).toFixed(1)+'M';
-  if(n>=1000) return (n/1000).toFixed(1)+'K';
-  return n.toString();
+const COLORS=['#F8E559','#4ade80','#60a5fa','#f87171','#c084fc','#fb923c','#34d399','#e879f9'];
+function fmtN(n){n=Number(n)||0;if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'K';return String(n);}
+function engRate(v){if(!v.views)return 0;return+(((v.likes+v.comments*2+v.shares*3)/v.views)*100).toFixed(1);}
+function watchRate(v){if(!v.views||!v.duration||!v.avg_watch)return 0;return+((v.avg_watch/v.duration)*100).toFixed(1);}
+function completion(v){if(!v.duration||!v.avg_watch)return 0;return+((v.avg_watch/v.duration)*100).toFixed(1);}
+function chColor(i){return COLORS[i%COLORS.length];}
+let chartInstances={};
+function mkChart(id,cfg){
+  if(chartInstances[id])chartInstances[id].destroy();
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  chartInstances[id]=new Chart(ctx,cfg);
 }
-function engRate(d){
-  if(!d||!d.views_avg) return 0;
-  return +((((d.likes+d.comments*2+d.shares*3)/d.views_avg)*100).toFixed(1));
-}
-function calcScore(d){
-  if(!d) return 0;
-  const eng = d.views_avg>0 ? ((d.likes+d.comments*2+d.shares*3)/d.views_avg)*100 : 0;
-  const freq = Math.min((d.videos/4)*100,100);
-  const wt = d.watchtime||0;
-  const growth = d.follower_delta>0 ? Math.min(d.follower_delta/(d.followers*0.02)*100,100) : Math.max(50+d.follower_delta/((d.followers||1)*0.01)*2,0);
-  return Math.round(Math.min(eng/8*100,100)*0.35 + wt*0.25 + freq*0.2 + growth*0.2);
-}
-function scoreClass(s){return s>=80?'great':s>=60?'good':s>=40?'ok':'bad'}
-function scoreLabel(s){return s>=80?'Rất khoẻ':s>=60?'Khoẻ':s>=40?'Trung bình':'Cần cải thiện'}
-function barColor(s){return s>=80?'#22c97a':s>=60?'#4da6ff':s>=40?'#f5a623':'#ff5f5f'}
-function latestEntry(channelId){
-  const entries=getEntries().filter(e=>e.channel_id===channelId);
-  return entries.length?entries[entries.length-1]:null;
-}
-
+const gridColor='rgba(248,229,89,.08)';
+const tickColor='#555';
+const axisOpts={ticks:{color:tickColor},grid:{color:gridColor}};
+ 
 // ─── OVERVIEW ─────────────────────────────────────────────────────────────────
 function renderOverview(){
-  const channels=getChannels();
-  const scores=channels.map(c=>calcScore(latestEntry(c.id)));
-  const avgScore=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;
-  const totalF=channels.reduce((a,c)=>{const d=latestEntry(c.id);return a+(d?Number(d.followers):0)},0);
-  const healthy=scores.filter(s=>s>=60).length;
-  const alerts=buildAlerts();
-  const warnCount=alerts.filter(a=>a.type!=='info').length;
-
-  document.getElementById('overview-metrics').innerHTML=`
-    <div class="metric-card"><div class="metric-label">Tổng kênh</div><div class="metric-value">${channels.length}</div><div class="metric-sub">${healthy} kênh khoẻ</div></div>
-    <div class="metric-card"><div class="metric-label">Điểm TB danh mục</div><div class="metric-value" style="color:${avgScore>=60?'var(--green)':avgScore>=40?'var(--amber)':'var(--red)'}">${avgScore}<span style="font-size:14px;color:var(--text2)">/100</span></div><div class="metric-sub">${avgScore>=60?'Ổn định':'Cần chú ý'}</div></div>
-    <div class="metric-card"><div class="metric-label">Tổng followers</div><div class="metric-value">${fmtNum(totalF)}</div><div class="metric-sub">Tất cả kênh</div></div>
-    <div class="metric-card"><div class="metric-label">Cảnh báo</div><div class="metric-value" style="color:${warnCount>0?'var(--red)':'var(--green)'}">${warnCount}</div><div class="metric-sub">${warnCount>0?'Cần xử lý':'Tất cả ổn'}</div></div>
+  const channels=getCh();
+  const allVids=getVid();
+  const vids=filterByPeriod(allVids,ovPeriod);
+ 
+  let totViews=0,totLikes=0,totComments=0,totShares=0;
+  channels.forEach(c=>{
+    const cv=vids.filter(v=>v.channel_id===c.id);
+    totViews+=cv.reduce((a,v)=>a+(+v.views||0),0);
+    totLikes+=cv.reduce((a,v)=>a+(+v.likes||0),0);
+    totComments+=cv.reduce((a,v)=>a+(+v.comments||0),0);
+    totShares+=cv.reduce((a,v)=>a+(+v.shares||0),0);
+  });
+  const totEng=totViews>0?+((totLikes+totComments*2+totShares*3)/totViews*100).toFixed(1):0;
+ 
+  document.getElementById('ov-metrics').innerHTML=`
+    <div class="metric-card"><div class="metric-label">Tổng kênh</div><div class="metric-value">${channels.length}</div><div class="metric-sub">${vids.length} video trong kỳ</div></div>
+    <div class="metric-card"><div class="metric-label">Lượt xem</div><div class="metric-value">${fmtN(totViews)}</div><div class="metric-sub">Tổng tất cả kênh</div></div>
+    <div class="metric-card"><div class="metric-label">Engagement Rate</div><div class="metric-value">${totEng}%</div><div class="metric-sub">TB toàn danh mục</div></div>
+    <div class="metric-card"><div class="metric-label">Tương tác</div><div class="metric-value">${fmtN(totLikes+totComments+totShares)}</div><div class="metric-sub">Likes + Cmt + Share</div></div>
   `;
-
-  const sorted=[...channels].sort((a,b)=>calcScore(latestEntry(b.id))-calcScore(latestEntry(a.id)));
-  document.getElementById('ranking-body').innerHTML=sorted.map(c=>{
-    const d=latestEntry(c.id);const s=calcScore(d);const er=d?engRate(d):0;
-    const delta=d&&d.follower_delta>=0?`<span class="trend-up">+${fmtNum(d.follower_delta)}</span>`:`<span class="trend-down">${fmtNum(d?d.follower_delta:0)}</span>`;
+ 
+  // Table
+  const rows=channels.map((c,i)=>{
+    const cv=vids.filter(v=>v.channel_id===c.id);
+    const views=cv.reduce((a,v)=>a+(+v.views||0),0);
+    const likes=cv.reduce((a,v)=>a+(+v.likes||0),0);
+    const comments=cv.reduce((a,v)=>a+(+v.comments||0),0);
+    const shares=cv.reduce((a,v)=>a+(+v.shares||0),0);
+    const er=views>0?+((likes+comments*2+shares*3)/views*100).toFixed(1):0;
+    const wr=cv.length?+(cv.reduce((a,v)=>a+watchRate(v),0)/cv.length).toFixed(1):0;
+    const comp=cv.length?+(cv.reduce((a,v)=>a+completion(v),0)/cv.length).toFixed(1):0;
     return `<tr>
-      <td><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--text2)">${c.handle}</div></td>
-      <td><div class="health-wrap"><div class="hbar-bg"><div class="hbar" style="width:${s}%;background:${barColor(s)}"></div></div><span style="font-size:12px;color:var(--text2);min-width:28px">${s}</span></div></td>
-      <td>${fmtNum(d?d.followers:0)}<br><small>${delta}</small></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:${chColor(i)};flex-shrink:0"></div><div><div style="font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--text2)">${c.handle}</div></div></div></td>
+      <td>${fmtN(c.followers||0)}</td>
+      <td>${fmtN(views)}</td>
+      <td>${fmtN(likes)}</td>
+      <td>${fmtN(comments)}</td>
+      <td>${fmtN(shares)}</td>
       <td>${er}%</td>
-      <td>${d?d.watchtime:0}%</td>
-      <td>${d?d.videos:0}</td>
-      <td><span class="badge badge-${scoreClass(s)}">${scoreLabel(s)}</span></td>
+      <td>${wr}%</td>
+      <td>${comp}%</td>
     </tr>`;
   }).join('');
-
-  renderEngChart(sorted);
+  document.getElementById('ov-table').innerHTML=rows||'<tr><td colspan="9" style="color:var(--text2);text-align:center;padding:20px">Chưa có dữ liệu — thêm kênh và nhập video</td></tr>';
+ 
+  // Charts
+  const labels=channels.map(c=>c.name);
+  const viewsData=channels.map((c,i)=>vids.filter(v=>v.channel_id===c.id).reduce((a,v)=>a+(+v.views||0),0));
+  const engData=channels.map((c,i)=>{
+    const cv=vids.filter(v=>v.channel_id===c.id);
+    const vw=cv.reduce((a,v)=>a+(+v.views||0),0);
+    const lk=cv.reduce((a,v)=>a+(+v.likes||0),0);
+    const cm=cv.reduce((a,v)=>a+(+v.comments||0),0);
+    const sh=cv.reduce((a,v)=>a+(+v.shares||0),0);
+    return vw>0?+((lk+cm*2+sh*3)/vw*100).toFixed(1):0;
+  });
+ 
+  mkChart('chart-views',{type:'bar',data:{labels,datasets:[{label:'Lượt xem',data:viewsData,backgroundColor:channels.map((_,i)=>chColor(i)+'bb'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{...axisOpts},x:{...axisOpts}}}});
+  mkChart('chart-eng',{type:'bar',data:{labels,datasets:[{label:'Eng Rate %',data:engData,backgroundColor:channels.map((_,i)=>chColor(i)+'bb'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{...axisOpts,ticks:{...axisOpts.ticks,callback:v=>v+'%'}},x:{...axisOpts}}}});
+ 
+  // Trend line chart — group videos by date
+  const dateMap={};
+  vids.forEach(v=>{
+    const d=v.date?.slice(0,10);
+    if(!d)return;
+    dateMap[d]=(dateMap[d]||0)+(+v.views||0);
+  });
+  const sortedDates=Object.keys(dateMap).sort();
+  mkChart('chart-trend',{type:'line',data:{labels:sortedDates,datasets:[{label:'Lượt xem',data:sortedDates.map(d=>dateMap[d]),borderColor:COLORS[0],backgroundColor:COLORS[0]+'18',tension:.4,pointRadius:3,pointBackgroundColor:COLORS[0],fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{...axisOpts},x:{...axisOpts,ticks:{...axisOpts.ticks,maxTicksLimit:8}}}}});
+ 
+  updateAlertBadge();
 }
-
-let engChartInst=null;
-function renderEngChart(sorted){
-  const ctx=document.getElementById('engChart');if(!ctx)return;
-  if(engChartInst)engChartInst.destroy();
-  const labels=sorted.map(c=>c.name);
-  const data=sorted.map(c=>{const d=latestEntry(c.id);return d?engRate(d):0});
-  const colors=sorted.map(c=>c.color+'cc');
-  engChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Engagement rate (%)',data,backgroundColor:colors,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v+'%',color:'#55555f'},grid:{color:'rgba(255,255,255,.05)'}},x:{ticks:{color:'#8b8b96'},grid:{display:false}}}}});
-}
-
-// ─── CHANNELS PAGE ────────────────────────────────────────────────────────────
+ 
+// ─── CHANNELS ─────────────────────────────────────────────────────────────────
 function renderChannels(){
-  const channels=getChannels();
-  document.getElementById('channels-list').innerHTML=channels.map(c=>{
-    const d=latestEntry(c.id);const s=calcScore(d);
-    return `<div class="ch-card">
+  const channels=getCh();
+  const vids=getVid();
+  if(!channels.length){
+    document.getElementById('channels-grid').innerHTML='<div style="color:var(--text2);font-size:13px;padding:20px 0">Chưa có kênh nào. Bấm "+ Thêm kênh" để bắt đầu.</div>';
+    return;
+  }
+  document.getElementById('channels-grid').innerHTML=channels.map((c,i)=>{
+    const cv=vids.filter(v=>v.channel_id===c.id);
+    const views=cv.reduce((a,v)=>a+(+v.views||0),0);
+    const likes=cv.reduce((a,v)=>a+(+v.likes||0),0);
+    const comments=cv.reduce((a,v)=>a+(+v.comments||0),0);
+    const shares=cv.reduce((a,v)=>a+(+v.shares||0),0);
+    const color=chColor(i);
+    return `<div class="ch-card" onclick="showChannelDetail(${c.id})">
       <div class="ch-header">
         <div class="ch-info">
-          <div class="ch-avatar" style="background:${c.color}22;color:${c.color}">${c.name[0]}</div>
-          <div><div class="ch-name">${c.name}</div><div class="ch-handle">${c.handle} · ${c.category}</div></div>
+          <div class="ch-avatar" style="background:${color}22;color:${color}">${c.name[0]}</div>
+          <div>
+            <div class="ch-name">${c.name}</div>
+            <div class="ch-handle">${c.handle} · <span class="badge badge-yellow" style="font-size:10px">${c.category}</span></div>
+          </div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <span class="badge badge-${scoreClass(s)}">${s}/100 ${scoreLabel(s)}</span>
-          <button class="btn" style="padding:6px 10px;font-size:12px" onclick="editEntry(${c.id})">Nhập dữ liệu</button>
-          <button class="btn" style="padding:6px 10px;font-size:12px;color:var(--red);border-color:rgba(255,95,95,.3)" onclick="removeChannel(${c.id})">Xoá</button>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-sm" onclick="event.stopPropagation();editChannelEntry(${c.id})">Nhập video</button>
+          <button class="btn btn-sm" style="color:var(--red);border-color:rgba(248,113,113,.3)" onclick="event.stopPropagation();deleteChannel(${c.id})">Xoá</button>
         </div>
       </div>
-      <div class="ch-metrics">
-        <div class="ch-metric"><div class="ch-metric-label">Followers</div><div class="ch-metric-value">${fmtNum(d?d.followers:0)}</div><div class="ch-metric-sub">${d&&d.follower_delta>=0?'+':''}${fmtNum(d?d.follower_delta:0)} kỳ này</div></div>
-        <div class="ch-metric"><div class="ch-metric-label">Views avg</div><div class="ch-metric-value">${fmtNum(d?d.views_avg:0)}</div><div class="ch-metric-sub">mỗi video</div></div>
-        <div class="ch-metric"><div class="ch-metric-label">Eng. rate</div><div class="ch-metric-value">${d?engRate(d):0}%</div><div class="ch-metric-sub">likes+cmt+share/views</div></div>
-        <div class="ch-metric"><div class="ch-metric-label">Watch time</div><div class="ch-metric-value">${d?d.watchtime:0}%</div><div class="ch-metric-sub">% hoàn thành video</div></div>
+      <div class="ch-stats">
+        <div class="ch-stat"><div class="ch-stat-label">Followers</div><div class="ch-stat-value">${fmtN(c.followers||0)}</div></div>
+        <div class="ch-stat"><div class="ch-stat-label">Lượt xem</div><div class="ch-stat-value">${fmtN(views)}</div></div>
+        <div class="ch-stat"><div class="ch-stat-label">Likes</div><div class="ch-stat-value">${fmtN(likes)}</div></div>
+        <div class="ch-stat"><div class="ch-stat-label">Comments</div><div class="ch-stat-value">${fmtN(comments)}</div></div>
+        <div class="ch-stat"><div class="ch-stat-label">Shares</div><div class="ch-stat-value">${fmtN(shares)}</div></div>
       </div>
-      ${d&&d.note?`<div style="margin-top:12px;font-size:12px;color:var(--text2);background:var(--bg3);padding:8px 12px;border-radius:6px">📝 ${d.note}</div>`:''}
     </div>`;
   }).join('');
 }
-
+ 
+function showChannelDetail(chId){
+  const channels=getCh();
+  const vids=getVid().filter(v=>v.channel_id===chId);
+  const c=channels.find(ch=>ch.id===chId);
+  if(!c)return;
+  const i=channels.indexOf(c);
+  const color=chColor(i);
+ 
+  const rows=vids.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(v=>{
+    const wr=watchRate(v);
+    const comp=completion(v);
+    const er=engRate(v);
+    return `<tr>
+      <td>${v.date?.slice(0,10)||'—'}</td>
+      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${v.title}">${v.title||'—'}</td>
+      <td>${v.duration||0}s</td>
+      <td>${fmtN(v.views)}</td>
+      <td>${v.avg_watch||0}s</td>
+      <td>${wr}%</td>
+      <td>${comp}%</td>
+      <td>${fmtN(v.likes)}</td>
+      <td>${fmtN(v.comments)}</td>
+      <td>${fmtN(v.shares)}</td>
+      <td>${er}%</td>
+      <td style="color:var(--text2);font-size:12px">${v.note||''}</td>
+    </tr>`;
+  }).join('');
+ 
+  document.getElementById('channel-detail-content').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="ch-avatar" style="background:${color}22;color:${color};width:46px;height:46px;font-size:18px">${c.name[0]}</div>
+        <div>
+          <div style="font-size:18px;font-weight:600">${c.name}</div>
+          <div style="font-size:13px;color:var(--text2)">${c.handle} · ${c.category} · ${fmtN(c.followers)} followers</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="editChannelEntry(${c.id})">+ Nhập video</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Xu hướng lượt xem</div>
+      <div class="chart-wrap"><canvas id="detail-chart-${chId}" role="img" aria-label="Xu hướng lượt xem ${c.name}"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Danh sách video (${vids.length})</div>
+      <div class="video-table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Ngày</th><th>Tên video</th><th>Thời lượng</th><th>Lượt xem</th><th>Avg Watch</th><th>Watch Rate</th><th>Completion</th><th>Likes</th><th>Cmt</th><th>Share</th><th>Eng.Rate</th><th>Ghi chú</th></tr></thead>
+          <tbody>${rows||'<tr><td colspan="12" style="color:var(--text2);text-align:center;padding:16px">Chưa có video — bấm "+ Nhập video"</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+ 
+  document.getElementById('channels-list-view').style.display='none';
+  document.getElementById('channels-detail-view').style.display='block';
+ 
+  // Trend chart for this channel
+  setTimeout(()=>{
+    const sorted=vids.sort((a,b)=>new Date(a.date)-new Date(b.date));
+    const labels=sorted.map(v=>v.date?.slice(0,10)||'');
+    const data=sorted.map(v=>+v.views||0);
+    mkChart(`detail-chart-${chId}`,{type:'line',data:{labels,datasets:[{label:'Lượt xem',data,borderColor:color,backgroundColor:color+'22',tension:.4,pointRadius:4,pointBackgroundColor:color,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{...axisOpts},x:{...axisOpts,ticks:{...axisOpts.ticks,maxTicksLimit:8}}}}});
+  },50);
+}
+ 
+function showChannelList(){
+  document.getElementById('channels-list-view').style.display='block';
+  document.getElementById('channels-detail-view').style.display='none';
+}
+ 
 // ─── ALERTS ───────────────────────────────────────────────────────────────────
-function buildAlerts(){
+function buildChannelAlerts(c,vids){
   const alerts=[];
-  getChannels().forEach(c=>{
-    const d=latestEntry(c.id);const s=calcScore(d);
-    if(!d){alerts.push({type:'warn',msg:`${c.name}: Chưa có dữ liệu nào được nhập`});return;}
-    if(s<40)alerts.push({type:'danger',msg:`${c.name}: Điểm sức khoẻ rất thấp (${s}/100) — cần review nội dung ngay`});
-    if(d.follower_delta<0)alerts.push({type:'danger',msg:`${c.name}: Đang mất followers (${fmtNum(d.follower_delta)} kỳ này)`});
-    if(d.watchtime<50)alerts.push({type:'warn',msg:`${c.name}: Watch time thấp (${d.watchtime}%) — cần cải thiện hook đầu video`});
-    if(d.videos<2)alerts.push({type:'warn',msg:`${c.name}: Đăng ít bài (${d.videos} video/kỳ) — cần tăng tần suất`});
-    if(engRate(d)<3)alerts.push({type:'warn',msg:`${c.name}: Engagement rate thấp (${engRate(d)}%) — xem lại CTA và nội dung`});
-    if(s>=80)alerts.push({type:'info',msg:`${c.name}: Kênh đang rất tốt (${s}/100) — duy trì và scale nội dung`});
-  });
+  const cv=vids.filter(v=>v.channel_id===c.id);
+  if(!cv.length){alerts.push({type:'warn',msg:'Chưa có video nào được nhập cho kênh này'});return alerts;}
+  const views=cv.reduce((a,v)=>a+(+v.views||0),0);
+  const likes=cv.reduce((a,v)=>a+(+v.likes||0),0);
+  const comments=cv.reduce((a,v)=>a+(+v.comments||0),0);
+  const shares=cv.reduce((a,v)=>a+(+v.shares||0),0);
+  const er=views>0?((likes+comments*2+shares*3)/views*100):0;
+  const avgWr=cv.reduce((a,v)=>a+watchRate(v),0)/cv.length;
+  const avgComp=cv.reduce((a,v)=>a+completion(v),0)/cv.length;
+  if(er<3)alerts.push({type:'danger',msg:`Engagement rate thấp (${er.toFixed(1)}%) — dưới ngưỡng 3%, xem lại CTA và nội dung`});
+  if(avgWr<30)alerts.push({type:'danger',msg:`Watch Rate thấp (${avgWr.toFixed(1)}%) — hook đầu video cần cải thiện`});
+  if(avgComp<50)alerts.push({type:'warn',msg:`Completion Rate thấp (${avgComp.toFixed(1)}%) — video quá dài hoặc nội dung giữa bị loãng`});
+  if(cv.length<3)alerts.push({type:'warn',msg:`Ít video trong kỳ (${cv.length} video) — nên tăng tần suất đăng`});
+  const recent=cv.filter(v=>{const d=new Date(v.date);const now=new Date();return(now-d)/(1000*60*60*24)<=7;});
+  if(!recent.length)alerts.push({type:'warn',msg:'Không có video mới trong 7 ngày gần đây'});
+  if(!alerts.length)alerts.push({type:'info',msg:`Kênh đang hoạt động tốt — ER ${er.toFixed(1)}%, Watch Rate ${avgWr.toFixed(1)}%`});
   return alerts;
 }
+ 
 function renderAlerts(){
-  const alerts=buildAlerts();
-  const warns=alerts.filter(a=>a.type!=='info');
+  const channels=getCh();
+  const vids=getVid();
+  let warnTotal=0;
+  const html=channels.length?channels.map((c,i)=>{
+    const alerts=buildChannelAlerts(c,vids);
+    const warns=alerts.filter(a=>a.type!=='info').length;
+    warnTotal+=warns;
+    const color=chColor(i);
+    return `<div class="alert-ch-card">
+      <div class="alert-ch-header" onclick="toggleAlertCh(${c.id})">
+        <div class="alert-ch-title">
+          <div style="width:8px;height:8px;border-radius:50%;background:${color}"></div>
+          ${c.name} <span style="font-size:11px;color:var(--text2)">${c.handle}</span>
+          ${warns>0?`<span class="badge badge-red">${warns} cảnh báo</span>`:'<span class="badge badge-green">Ổn</span>'}
+        </div>
+        <svg class="toggle-arrow" id="arrow-${c.id}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="alert-ch-body" id="alert-body-${c.id}">
+        ${alerts.map(a=>`<div class="alert-item alert-${a.type}"><div class="dot dot-${a.type==='danger'?'red':a.type==='warn'?'amber':'green'}"></div><span>${a.msg}</span></div>`).join('')}
+      </div>
+    </div>`;
+  }).join(''):'<div style="color:var(--text2);font-size:13px;padding:16px">Chưa có kênh nào.</div>';
+  document.getElementById('alerts-list').innerHTML=html;
   const badge=document.getElementById('alert-badge');
-  if(warns.length>0){badge.textContent=warns.length;badge.style.display='inline'}else{badge.style.display='none'}
-  document.getElementById('alerts-content').innerHTML=`<div class="card-title">Cảnh báo cần xử lý</div>`+
-    (alerts.length?alerts.map(a=>`<div class="alert-item alert-${a.type}">
-      <div class="status-dot ${a.type==='danger'?'dot-red':a.type==='warn'?'dot-amber':'dot-green'}"></div>
-      <span>${a.msg}</span>
-    </div>`).join(''):'<p style="color:var(--text2);font-size:13px">Không có cảnh báo. Tất cả kênh đang ổn!</p>');
+  if(warnTotal>0){badge.textContent=warnTotal;badge.style.display='inline';}else{badge.style.display='none';}
 }
-
+ 
+function toggleAlertCh(id){
+  const body=document.getElementById('alert-body-'+id);
+  const arrow=document.getElementById('arrow-'+id);
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  arrow.classList.toggle('open',!isOpen);
+}
+function updateAlertBadge(){
+  const channels=getCh();const vids=getVid();
+  let w=0;channels.forEach(c=>{w+=buildChannelAlerts(c,vids).filter(a=>a.type!=='info').length;});
+  const badge=document.getElementById('alert-badge');
+  if(w>0){badge.textContent=w;badge.style.display='inline';}else{badge.style.display='none';}
+}
+ 
 // ─── REPORT ───────────────────────────────────────────────────────────────────
+let _reportText='';
+let _rptChartInst=null;
 function generateReport(){
-  const period=document.getElementById('rpt-period').value;
-  const detail=document.getElementById('rpt-detail').value;
-  const channels=getChannels();
-  const sorted=[...channels].sort((a,b)=>calcScore(latestEntry(b.id))-calcScore(latestEntry(a.id)));
-  const alerts=buildAlerts().filter(a=>a.type!=='info');
-  let txt=`📊 BÁO CÁO SỨC KHOẺ KÊNH TIKTOK\n`;
-  txt+=`Kỳ: ${period} | ${new Date().toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'})}\n`;
-  txt+=`${'─'.repeat(50)}\n\n`;
-  const healthy=sorted.filter(c=>calcScore(latestEntry(c.id))>=60).length;
-  txt+=`TỔNG QUAN\n• Tổng kênh: ${channels.length} | Kênh khoẻ: ${healthy} | Cảnh báo: ${alerts.length}\n\n`;
-  txt+=`XẾP HẠNG KÊNH\n`;
-  sorted.forEach((c,i)=>{
-    const d=latestEntry(c.id);const s=calcScore(d);
-    txt+=`${i+1}. ${c.name} (${c.handle})\n   Điểm: ${s}/100 | Followers: ${fmtNum(d?d.followers:0)} (${d&&d.follower_delta>=0?'+':''}${fmtNum(d?d.follower_delta:0)}) | Eng: ${d?engRate(d):0}% | Watch time: ${d?d.watchtime:0}%\n`;
-    if(detail==='Đầy đủ'&&d){txt+=`   Views avg: ${fmtNum(d.views_avg)} | Videos: ${d.videos}/kỳ | Likes: ${fmtNum(d.likes)} | Comments: ${fmtNum(d.comments)} | Shares: ${fmtNum(d.shares)}\n`;}
-    if(d&&d.note)txt+=`   📝 ${d.note}\n`;
+  const channels=getCh();
+  const allVids=getVid();
+  const chSel=document.getElementById('rpt-channel').value;
+  const periodVal=document.getElementById('rpt-period').value;
+  let periodDays=parseInt(periodVal)||28;
+  let fromDate=null,toDate=null;
+  if(periodVal==='custom'){
+    fromDate=new Date(document.getElementById('rpt-from').value);
+    toDate=new Date(document.getElementById('rpt-to').value);
+    periodDays='custom';
+  }
+  const period={days:periodDays,from:fromDate,to:toDate};
+  const vids=filterByPeriod(allVids,period);
+  const targetChs=chSel==='all'?channels:channels.filter(c=>String(c.id)===chSel);
+ 
+  let txt=`📊 BÁO CÁO TIKTOK\n`;
+  txt+=`Kỳ: ${periodVal==='custom'?`${document.getElementById('rpt-from').value} → ${document.getElementById('rpt-to').value}`:periodVal+' ngày'}\n`;
+  txt+=`Ngày tạo: ${new Date().toLocaleDateString('vi-VN')}\n${'─'.repeat(52)}\n\n`;
+ 
+  targetChs.forEach(c=>{
+    const cv=vids.filter(v=>v.channel_id===c.id);
+    const views=cv.reduce((a,v)=>a+(+v.views||0),0);
+    const likes=cv.reduce((a,v)=>a+(+v.likes||0),0);
+    const comments=cv.reduce((a,v)=>a+(+v.comments||0),0);
+    const shares=cv.reduce((a,v)=>a+(+v.shares||0),0);
+    const er=views>0?((likes+comments*2+shares*3)/views*100).toFixed(1):0;
+    const avgWr=cv.length?+(cv.reduce((a,v)=>a+watchRate(v),0)/cv.length).toFixed(1):0;
+    const avgComp=cv.length?+(cv.reduce((a,v)=>a+completion(v),0)/cv.length).toFixed(1):0;
+    txt+=`📌 ${c.name} (${c.handle})\n`;
+    txt+=`   Followers: ${fmtN(c.followers)} | Video trong kỳ: ${cv.length}\n`;
+    txt+=`   Lượt xem: ${fmtN(views)} | Likes: ${fmtN(likes)} | Comments: ${fmtN(comments)} | Shares: ${fmtN(shares)}\n`;
+    txt+=`   Eng. Rate: ${er}% | Watch Rate TB: ${avgWr}% | Completion TB: ${avgComp}%\n`;
+    if(cv.length){
+      const top=[...cv].sort((a,b)=>(+b.views||0)-(+a.views||0))[0];
+      txt+=`   Video nổi bật nhất: "${top.title}" — ${fmtN(top.views)} views\n`;
+    }
     txt+='\n';
   });
-  if(alerts.length){txt+=`⚠️ CẦN XỬ LÝ (${alerts.length} vấn đề)\n`;alerts.forEach(a=>{txt+=`• ${a.msg}\n`;});txt+='\n';}
-  txt+=`${'─'.repeat(50)}\nTạo tự động từ TikTok Health Dashboard`;
-  const out=document.getElementById('report-out');
-  out.style.display='block';out.textContent=txt;
-  window._rpt=txt;
+  txt+=`${'─'.repeat(52)}\nBáo cáo tự động từ TikTok Dashboard`;
+  _reportText=txt;
+ 
+  document.getElementById('rpt-text').textContent=txt;
+  document.getElementById('rpt-preview').style.display='block';
+ 
+  // Chart
+  const labels=targetChs.map(c=>c.name);
+  const viewsData=targetChs.map(c=>vids.filter(v=>v.channel_id===c.id).reduce((a,v)=>a+(+v.views||0),0));
+  if(_rptChartInst)_rptChartInst.destroy();
+  setTimeout(()=>{
+    const ctx=document.getElementById('rpt-chart');
+    if(!ctx)return;
+    _rptChartInst=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Lượt xem',data:viewsData,borderColor:COLORS[0],backgroundColor:COLORS[0]+'22',tension:.4,pointRadius:5,pointBackgroundColor:COLORS[0],fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{...axisOpts},x:{...axisOpts}}}});
+  },50);
 }
-function copyReport(){if(!window._rpt){generateReport();}navigator.clipboard.writeText(window._rpt||'').then(()=>alert('Đã copy báo cáo!')).catch(()=>alert('Không copy được — hãy bôi đen thủ công'));}
-
-// ─── SETUP / CONFIG ───────────────────────────────────────────────────────────
-function saveConfig(){
-  const id=document.getElementById('sheets-id').value.trim();
-  const key=document.getElementById('sheets-api-key').value.trim();
-  if(!id||!key){alert('Vui lòng điền Sheets ID và API Key');return;}
-  saveConfigData({sheetsId:id,apiKey:key});
-  alert('Đã lưu cấu hình! Bấm "Kiểm tra kết nối" để xác nhận.');
+ 
+function downloadReport(){
+  if(!_reportText){generateReport();}
+  const blob=new Blob([_reportText],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`tiktok-report-${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();URL.revokeObjectURL(url);
 }
-function loadConfigUI(){
-  const cfg=loadConfig();
-  if(cfg.sheetsId)document.getElementById('sheets-id').value=cfg.sheetsId;
-  if(cfg.apiKey)document.getElementById('sheets-api-key').value=cfg.apiKey;
+ 
+async function downloadWord(){
+  if(!_reportText){generateReport();}
+  if(typeof docx==='undefined'){alert('Thư viện Word chưa tải xong, thử lại sau 2 giây.');return;}
+  const {Document,Packer,Paragraph,TextRun,HeadingLevel,Table,TableRow,TableCell,WidthType,AlignmentType,BorderStyle,ShadingType}=docx;
+ 
+  const channels=getCh();
+  const allVids=getVid();
+  const chSel=document.getElementById('rpt-channel').value;
+  const periodVal=document.getElementById('rpt-period').value;
+  let periodDays=parseInt(periodVal)||28,fromDate=null,toDate=null;
+  if(periodVal==='custom'){fromDate=new Date(document.getElementById('rpt-from').value);toDate=new Date(document.getElementById('rpt-to').value);periodDays='custom';}
+  const period={days:periodDays,from:fromDate,to:toDate};
+  const vids=filterByPeriod(allVids,period);
+  const targetChs=chSel==='all'?channels:channels.filter(c=>String(c.id)===chSel);
+  const periodLabel=periodVal==='custom'?`${document.getElementById('rpt-from').value} → ${document.getElementById('rpt-to').value}`:periodVal+' ngày';
+ 
+  const children=[];
+ 
+  // TITLE
+  children.push(new Paragraph({
+    text:'BÁO CÁO TIKTOK',
+    heading:HeadingLevel.HEADING_1,
+    alignment:AlignmentType.CENTER,
+    spacing:{after:200}
+  }));
+  children.push(new Paragraph({
+    children:[
+      new TextRun({text:`Kỳ báo cáo: `,bold:true}),
+      new TextRun({text:periodLabel}),
+      new TextRun({text:`   |   Ngày tạo: `,bold:true}),
+      new TextRun({text:new Date().toLocaleDateString('vi-VN')}),
+    ],
+    alignment:AlignmentType.CENTER,
+    spacing:{after:400}
+  }));
+ 
+  // SUMMARY
+  let totViews=0,totLikes=0,totCmt=0,totShares=0;
+  targetChs.forEach(c=>{
+    const cv=vids.filter(v=>v.channel_id===c.id);
+    totViews+=cv.reduce((a,v)=>a+(+v.views||0),0);
+    totLikes+=cv.reduce((a,v)=>a+(+v.likes||0),0);
+    totCmt+=cv.reduce((a,v)=>a+(+v.comments||0),0);
+    totShares+=cv.reduce((a,v)=>a+(+v.shares||0),0);
+  });
+  const totEng=totViews>0?((totLikes+totCmt*2+totShares*3)/totViews*100).toFixed(1):0;
+  const totVids=targetChs.reduce((a,c)=>a+vids.filter(v=>v.channel_id===c.id).length,0);
+ 
+  children.push(new Paragraph({text:'TỔNG QUAN',heading:HeadingLevel.HEADING_2,spacing:{after:160}}));
+ 
+  const summaryTable=new Table({
+    width:{size:100,type:WidthType.PERCENTAGE},
+    rows:[
+      new TableRow({children:[
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Tổng kênh',bold:true})]})],width:{size:25,type:WidthType.PERCENTAGE}}),
+        new TableCell({children:[new Paragraph({text:String(targetChs.length)})],width:{size:25,type:WidthType.PERCENTAGE}}),
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Tổng video',bold:true})]})],width:{size:25,type:WidthType.PERCENTAGE}}),
+        new TableCell({children:[new Paragraph({text:String(totVids)})],width:{size:25,type:WidthType.PERCENTAGE}}),
+      ]}),
+      new TableRow({children:[
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Tổng lượt xem',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({text:fmtN(totViews)})]}),
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Eng. Rate TB',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({text:totEng+'%'})]}),
+      ]}),
+      new TableRow({children:[
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Tổng Likes',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({text:fmtN(totLikes)})]}),
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Tổng Shares',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({text:fmtN(totShares)})]}),
+      ]}),
+    ]
+  });
+  children.push(summaryTable);
+  children.push(new Paragraph({text:'',spacing:{after:300}}));
+ 
+  // PER CHANNEL
+  targetChs.forEach(c=>{
+    const cv=vids.filter(v=>v.channel_id===c.id);
+    const views=cv.reduce((a,v)=>a+(+v.views||0),0);
+    const likes=cv.reduce((a,v)=>a+(+v.likes||0),0);
+    const comments=cv.reduce((a,v)=>a+(+v.comments||0),0);
+    const shares=cv.reduce((a,v)=>a+(+v.shares||0),0);
+    const er=views>0?((likes+comments*2+shares*3)/views*100).toFixed(1):0;
+    const avgWr=cv.length?+(cv.reduce((a,v)=>a+watchRate(v),0)/cv.length).toFixed(1):0;
+    const avgComp=cv.length?+(cv.reduce((a,v)=>a+completion(v),0)/cv.length).toFixed(1):0;
+ 
+    children.push(new Paragraph({text:`${c.name} (${c.handle})`,heading:HeadingLevel.HEADING_2,spacing:{before:300,after:160}}));
+ 
+    // Channel summary table
+    const chTable=new Table({
+      width:{size:100,type:WidthType.PERCENTAGE},
+      rows:[
+        new TableRow({children:[
+          new TableCell({children:[new Paragraph({children:[new TextRun({text:'Followers',bold:true})]})]}),
+          new TableCell({children:[new Paragraph({text:fmtN(c.followers||0)})]}),
+          new TableCell({children:[new Paragraph({children:[new TextRun({text:'Video trong kỳ',bold:true})]})]}),
+          new TableCell({children:[new Paragraph({text:String(cv.length)})]}),
+        ]}),
+        new TableRow({children:[
+          new TableCell({children:[new Paragraph({children:[new TextRun({text:'Lượt xem',bold:true})]})]}),
+          new TableCell({children:[new Paragraph({text:fmtN(views)})]}),
+          new TableCell({children:[new Paragraph({children:[new TextRun({text:'Eng. Rate',bold:true})]})]}),
+          new TableCell({children:[new Paragraph({text:er+'%'})]}),
+        ]}),
+        new TableRow({children:[
+          new TableCell({children:[new Paragraph({children:[new TextRun({text:'Likes',bold:true})]})]}),
+          new TableCell({children:[new Paragraph({text:fmtN(likes)})]}),
+          new TableCell({children:[new Paragraph({children:[new TextRun({text:'Comments',bold:true})]})]}),
+          new TableCell({children:[new Paragraph({text:fmtN(comments)})]}),
+        ]}),
+        new TableRow({children:[
+          new TableCell({children:[new Paragraph({children:[new TextRun({text:'Watch Rate TB',bold:true})]})]}),
+          new TableCell({children:[new Paragraph({text:avgWr+'%'})]}),
+          new TableCell({children:[new Paragraph({children:[new TextRun({text:'Completion TB',bold:true})]})]}),
+          new TableCell({children:[new Paragraph({text:avgComp+'%'})]}),
+        ]}),
+      ]
+    });
+    children.push(chTable);
+ 
+    // Video list table
+    if(cv.length){
+      children.push(new Paragraph({text:'Danh sách video:',spacing:{before:200,after:120},children:[new TextRun({text:'Danh sách video:',bold:true})]}));
+      const headerRow=new TableRow({children:[
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Ngày',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Tên video',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Lượt xem',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Watch Rate',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Completion',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Eng.Rate',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Likes',bold:true})]})]}),
+        new TableCell({children:[new Paragraph({children:[new TextRun({text:'Shares',bold:true})]})]}),
+      ]});
+      const videoRows=cv.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(v=>
+        new TableRow({children:[
+          new TableCell({children:[new Paragraph({text:v.date?.slice(0,10)||''})]}),
+          new TableCell({children:[new Paragraph({text:v.title||''})]}),
+          new TableCell({children:[new Paragraph({text:fmtN(v.views)})]}),
+          new TableCell({children:[new Paragraph({text:watchRate(v)+'%'})]}),
+          new TableCell({children:[new Paragraph({text:completion(v)+'%'})]}),
+          new TableCell({children:[new Paragraph({text:engRate(v)+'%'})]}),
+          new TableCell({children:[new Paragraph({text:fmtN(v.likes)})]}),
+          new TableCell({children:[new Paragraph({text:fmtN(v.shares)})]}),
+        ]})
+      );
+      children.push(new Table({width:{size:100,type:WidthType.PERCENTAGE},rows:[headerRow,...videoRows]}));
+    }
+    children.push(new Paragraph({text:'',spacing:{after:200}}));
+  });
+ 
+  // FOOTER
+  children.push(new Paragraph({
+    children:[new TextRun({text:'Báo cáo tự động từ TikTok Dashboard',italics:true,color:'888888'})],
+    alignment:AlignmentType.CENTER,
+    spacing:{before:400}
+  }));
+ 
+  const doc=new Document({
+    sections:[{
+      properties:{},
+      children
+    }]
+  });
+ 
+  const blob=await Packer.toBlob(doc);
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`tiktok-report-${new Date().toISOString().slice(0,10)}.docx`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
-async function testConnection(){
-  const cfg=loadConfig();
-  const el=document.getElementById('conn-status');
-  if(!cfg.sheetsId||!cfg.apiKey){el.className='conn-badge conn-err';el.textContent='❌ Chưa cấu hình';return;}
-  el.className='conn-badge conn-pending';el.textContent='⏳ Đang kiểm tra...';
-  try{
-    const url=`https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetsId}?key=${cfg.apiKey}`;
-    const r=await fetch(url);
-    if(r.ok){el.className='conn-badge conn-ok';el.textContent='✅ Kết nối thành công';}
-    else{el.className='conn-badge conn-err';el.textContent='❌ Sai ID hoặc API Key';}
-  }catch(e){el.className='conn-badge conn-err';el.textContent='❌ Lỗi kết nối';}
-}
-async function syncFromSheets(){
-  const cfg=loadConfig();
-  if(!cfg.sheetsId||!cfg.apiKey){alert('Chưa cấu hình Google Sheets. Vào tab Cài đặt để thiết lập.');return;}
-  try{
-    const base=`https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetsId}/values`;
-    const [chRes,dataRes]=await Promise.all([
-      fetch(`${base}/Channels!A2:E100?key=${cfg.apiKey}`),
-      fetch(`${base}/Data!A2:K1000?key=${cfg.apiKey}`)
-    ]);
-    if(!chRes.ok||!dataRes.ok){alert('Lỗi khi đọc Sheets. Kiểm tra lại ID, API Key và tên tab.');return;}
-    const chJson=await chRes.json();const dataJson=await dataRes.json();
-    const chRows=chJson.values||[];const dataRows=dataJson.values||[];
-    const channels=chRows.map(r=>({id:Number(r[0]),name:r[1]||'',handle:r[2]||'',category:r[3]||'',color:r[4]||'#7c6aff'})).filter(c=>c.id&&c.name);
-    const entries=dataRows.map(r=>({channel_id:Number(r[0]),period:r[1]||'',followers:Number(r[2])||0,follower_delta:Number(r[3])||0,views_avg:Number(r[4])||0,videos:Number(r[5])||0,likes:Number(r[6])||0,comments:Number(r[7])||0,shares:Number(r[8])||0,watchtime:Number(r[9])||0,note:r[10]||''})).filter(e=>e.channel_id);
-    if(channels.length){saveChannels(channels);}
-    if(entries.length){saveEntries(entries);}
-    document.getElementById('last-sync').textContent='Đồng bộ lần cuối: '+new Date().toLocaleString('vi-VN');
-    renderOverview();alert(`Đồng bộ thành công! ${channels.length} kênh, ${entries.length} bản ghi.`);
-  }catch(e){alert('Lỗi: '+e.message);}
-}
-
+ 
 // ─── CHANNEL OPS ──────────────────────────────────────────────────────────────
-const PALETTE=['#7c6aff','#22c97a','#f5a623','#4da6ff','#ff5f5f','#e040fb','#26c6da','#ffca28'];
 function addChannel(){
   const name=document.getElementById('nc-name').value.trim();
   const handle=document.getElementById('nc-handle').value.trim();
   const followers=parseInt(document.getElementById('nc-followers').value)||0;
-  const category=document.getElementById('nc-cat').value;
+  const catSel=document.getElementById('nc-cat').value;
+  const category=catSel==='Khác'?document.getElementById('nc-other').value.trim()||'Khác':catSel;
   if(!name||!handle){alert('Vui lòng điền tên và handle');return;}
-  const channels=getChannels();
-  const id=nextId();
-  channels.push({id,name,handle,category,color:PALETTE[channels.length%PALETTE.length]});
-  saveChannels(channels);
-  const entries=getEntries();
-  entries.push({channel_id:id,period:'Tháng này',followers,follower_delta:0,views_avg:0,videos:0,likes:0,comments:0,shares:0,watchtime:0,note:''});
-  saveEntries(entries);
-  closeModal('add-channel-modal');
-  ['nc-name','nc-handle','nc-followers'].forEach(id=>document.getElementById(id).value='');
-  renderChannels();renderOverview();renderAlerts();
+  const channels=getCh();
+  const id=Date.now();
+  channels.push({id,name,handle,category,followers});
+  saveCh(channels);
+  closeModal('modal-add-ch');
+  ['nc-name','nc-handle','nc-followers','nc-other'].forEach(x=>{const el=document.getElementById(x);if(el)el.value='';});
+  renderChannels();renderOverview();updateRptChannelSel();
 }
-function removeChannel(id){
-  if(!confirm('Xoá kênh này? Dữ liệu đã nhập sẽ mất.'))return;
-  saveChannels(getChannels().filter(c=>c.id!==id));
-  saveEntries(getEntries().filter(e=>e.channel_id!==id));
-  renderChannels();renderOverview();renderAlerts();
+function deleteChannel(id){
+  if(!confirm('Xoá kênh này? Toàn bộ video của kênh cũng sẽ bị xoá.'))return;
+  saveCh(getCh().filter(c=>c.id!==id));
+  saveVid(getVid().filter(v=>v.channel_id!==id));
+  renderChannels();renderOverview();updateAlertBadge();updateRptChannelSel();
 }
-function editEntry(channelId){
-  const sel=document.getElementById('e-channel');
-  sel.innerHTML=getChannels().map(c=>`<option value="${c.id}"${c.id===channelId?' selected':''}>${c.name}</option>`).join('');
-  const d=latestEntry(channelId);
-  if(d){
-    document.getElementById('e-followers').value=d.followers||'';
-    document.getElementById('e-delta').value=d.follower_delta||'';
-    document.getElementById('e-views').value=d.views_avg||'';
-    document.getElementById('e-videos').value=d.videos||'';
-    document.getElementById('e-likes').value=d.likes||'';
-    document.getElementById('e-comments').value=d.comments||'';
-    document.getElementById('e-shares').value=d.shares||'';
-    document.getElementById('e-watchtime').value=d.watchtime||'';
-    document.getElementById('e-note').value=d.note||'';
-  }
-  openModal('entry-modal');
+function toggleCatOther(){
+  const v=document.getElementById('nc-cat').value;
+  document.getElementById('nc-other-wrap').style.display=v==='Khác'?'flex':'none';
 }
-function saveEntry(){
-  const channelId=parseInt(document.getElementById('e-channel').value);
-  const period=document.getElementById('e-period').value;
-  const entry={channel_id:channelId,period,followers:parseInt(document.getElementById('e-followers').value)||0,follower_delta:parseInt(document.getElementById('e-delta').value)||0,views_avg:parseInt(document.getElementById('e-views').value)||0,videos:parseInt(document.getElementById('e-videos').value)||0,likes:parseInt(document.getElementById('e-likes').value)||0,comments:parseInt(document.getElementById('e-comments').value)||0,shares:parseInt(document.getElementById('e-shares').value)||0,watchtime:parseInt(document.getElementById('e-watchtime').value)||0,note:document.getElementById('e-note').value};
-  const entries=getEntries().filter(e=>!(e.channel_id===channelId&&e.period===period));
-  entries.push(entry);
-  saveEntries(entries);
-  closeModal('entry-modal');
-  document.getElementById('last-sync').textContent='Cập nhật lần cuối: '+new Date().toLocaleString('vi-VN');
-  renderOverview();renderAlerts();
-  const ch=getChannels().find(c=>c.id===channelId);
-  alert(`Đã lưu dữ liệu cho kênh ${ch?ch.name:''}!`);
+ 
+// ─── VIDEO OPS ────────────────────────────────────────────────────────────────
+function editChannelEntry(chId){
+  const sel=document.getElementById('v-channel');
+  sel.innerHTML=getCh().map(c=>`<option value="${c.id}"${c.id===chId?' selected':''}>${c.name}</option>`).join('');
+  document.getElementById('v-date').value=new Date().toISOString().slice(0,10);
+  openModal('modal-video');
 }
-
+function saveVideo(){
+  const chId=parseInt(document.getElementById('v-channel').value);
+  const title=document.getElementById('v-title').value.trim();
+  if(!title){alert('Vui lòng nhập tên video');return;}
+  const vids=getVid();
+  vids.push({
+    id:Date.now(),channel_id:chId,
+    title,
+    date:document.getElementById('v-date').value,
+    duration:parseInt(document.getElementById('v-duration').value)||0,
+    views:parseInt(document.getElementById('v-views').value)||0,
+    avg_watch:parseInt(document.getElementById('v-avgwatch').value)||0,
+    likes:parseInt(document.getElementById('v-likes').value)||0,
+    comments:parseInt(document.getElementById('v-comments').value)||0,
+    shares:parseInt(document.getElementById('v-shares').value)||0,
+    note:document.getElementById('v-note').value
+  });
+  saveVid(vids);
+  closeModal('modal-video');
+  ['v-title','v-duration','v-views','v-avgwatch','v-likes','v-comments','v-shares','v-note'].forEach(x=>{const el=document.getElementById(x);if(el)el.value='';});
+  renderOverview();renderChannels();updateAlertBadge();
+}
+ 
+// ─── SHEETS SYNC ──────────────────────────────────────────────────────────────
+async function syncSheets(){
+  const cfg=getCfg();
+  if(!cfg.sid||!cfg.key){alert('Chưa cấu hình Google Sheets. Vào tab Cài đặt.');return;}
+  try{
+    const base=`https://sheets.googleapis.com/v4/spreadsheets/${cfg.sid}/values`;
+    const [chRes,vidRes]=await Promise.all([
+      fetch(`${base}/Channels!A2:E500?key=${cfg.key}`),
+      fetch(`${base}/Videos!A2:K5000?key=${cfg.key}`)
+    ]);
+    if(!chRes.ok||!vidRes.ok){alert('Lỗi kết nối Sheets. Kiểm tra lại ID và API Key.');return;}
+    const chJson=await chRes.json();const vidJson=await vidRes.json();
+    const chRows=chJson.values||[];const vidRows=vidJson.values||[];
+    const channels=chRows.map(r=>({id:Number(r[0]),name:r[1]||'',handle:r[2]||'',category:r[3]||'',followers:Number(r[4])||0})).filter(c=>c.id&&c.name);
+    const videos=vidRows.map(r=>({id:Number(r[0]),channel_id:Number(r[1]),title:r[2]||'',date:r[3]||'',duration:Number(r[4])||0,views:Number(r[5])||0,avg_watch:Number(r[6])||0,likes:Number(r[7])||0,comments:Number(r[8])||0,shares:Number(r[9])||0,note:r[10]||''})).filter(v=>v.channel_id&&v.title);
+    if(channels.length)saveCh(channels);
+    if(videos.length)saveVid(videos);
+    document.getElementById('sync-label').textContent='Đồng bộ lúc '+new Date().toLocaleString('vi-VN');
+    renderOverview();renderChannels();renderAlerts();updateRptChannelSel();
+    alert(`Đồng bộ thành công! ${channels.length} kênh, ${videos.length} video.`);
+  }catch(e){alert('Lỗi: '+e.message);}
+}
+ 
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+function saveConfig(){
+  const sid=document.getElementById('cfg-sid').value.trim();
+  const key=document.getElementById('cfg-key').value.trim();
+  if(!sid||!key){alert('Điền đủ Sheets ID và API Key');return;}
+  saveCfg({sid,key});alert('Đã lưu! Bấm Kiểm tra để xác nhận.');
+}
+function loadConfigUI(){
+  const cfg=getCfg();
+  if(cfg.sid)document.getElementById('cfg-sid').value=cfg.sid;
+  if(cfg.key)document.getElementById('cfg-key').value=cfg.key;
+}
+async function testConn(){
+  const cfg=getCfg();const el=document.getElementById('conn-status');
+  if(!cfg.sid||!cfg.key){el.className='conn-badge conn-err';el.textContent='❌ Chưa cấu hình';return;}
+  el.className='conn-badge conn-pend';el.textContent='⏳ Đang kiểm tra...';
+  try{
+    const r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${cfg.sid}?key=${cfg.key}`);
+    if(r.ok){el.className='conn-badge conn-ok';el.textContent='✅ Kết nối thành công';}
+    else{el.className='conn-badge conn-err';el.textContent='❌ Sai ID hoặc Key';}
+  }catch(e){el.className='conn-badge conn-err';el.textContent='❌ Lỗi kết nối';}
+}
+ 
+// ─── REPORT CHANNEL SELECT ────────────────────────────────────────────────────
+function updateRptChannelSel(){
+  const sel=document.getElementById('rpt-channel');
+  const channels=getCh();
+  sel.innerHTML='<option value="all">Tất cả kênh</option>'+channels.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+}
+ 
 // ─── MODAL ────────────────────────────────────────────────────────────────────
 function openModal(id){
-  if(id==='entry-modal'){
-    const sel=document.getElementById('e-channel');
-    sel.innerHTML=getChannels().map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  if(id==='modal-video'){
+    document.getElementById('v-channel').innerHTML=getCh().map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+    document.getElementById('v-date').value=new Date().toISOString().slice(0,10);
   }
   document.getElementById(id).classList.add('open');
 }
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
-
-// ─── TABS ─────────────────────────────────────────────────────────────────────
-function switchTab(tab){
+ 
+// ─── NAV ─────────────────────────────────────────────────────────────────────
+function nav(tab){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+tab).classList.add('active');
-  document.querySelectorAll('.nav-item')[['overview','channels','alerts','report','_','setup'].indexOf(tab)]?.classList.add('active');
+  const tabs=['overview','channels','alerts','report','_','setup'];
+  const idx=tabs.indexOf(tab);
+  if(idx>=0)document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
   if(tab==='overview')renderOverview();
-  if(tab==='channels')renderChannels();
+  if(tab==='channels'){showChannelList();renderChannels();}
   if(tab==='alerts')renderAlerts();
+  if(tab==='report')updateRptChannelSel();
   if(tab==='setup')loadConfigUI();
 }
-
+ 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 renderOverview();
-renderAlerts();
-document.getElementById('last-sync').textContent='Dữ liệu mẫu — bấm "Đồng bộ Sheets" để tải thật';
+updateRptChannelSel();
 </script>
 </body>
 </html>
+ 
