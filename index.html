@@ -1004,9 +1004,9 @@ function saveVideo(){
 }
  
 // ─── SHEETS SYNC ──────────────────────────────────────────────────────────────
-async function syncSheets(){
+async function syncSheets(silent=false){
   const cfg=getCfg();
-  if(!cfg.sid||!cfg.key){alert('Chưa cấu hình Google Sheets. Vào tab Cài đặt.');return;}
+  if(!cfg.sid||!cfg.key){if(!silent)alert('Chưa cấu hình Google Sheets. Vào tab Cài đặt.');return;}
   const syncBtn=document.querySelector('button[onclick="syncSheets()"]');
   if(syncBtn){syncBtn.textContent='⏳ Đang đồng bộ...';syncBtn.disabled=true;}
   try{
@@ -1065,7 +1065,7 @@ async function syncSheets(){
     const syncTime='Đồng bộ lúc '+new Date().toLocaleString('vi-VN');
     document.getElementById('sync-label').textContent=syncTime;
     renderOverview();renderChannels();renderAlerts();updateRptChannelSel();
-    alert(`✅ Đồng bộ thành công!\n${channels.length} kênh | ${allVideos.length} video tổng cộng`);
+    if(!silent)alert(`✅ Đồng bộ thành công!\n${channels.length} kênh | ${allVideos.length} video tổng cộng`);
   }catch(e){
     alert('Lỗi đồng bộ: '+e.message);
   }finally{
@@ -1148,9 +1148,16 @@ function nav(tab){
 }
  
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-renderOverview();
-updateRptChannelSel();
+async function init(){
+  // Hard-code Sheets config so anyone opening the web sees data automatically
+  const hardcoded={sid:'1nTYEk70EIABoDYEEe95u3D0MAjhB7R368fO2Ga9xaPQ',key:'AIzaSyBvTzK4Ea7swmY2dYrvOFKTnQyel7H9Smc'};
+  saveCfg(hardcoded);
+  renderOverview();
+  updateRptChannelSel();
+  document.getElementById('sync-label').textContent='⏳ Đang tải dữ liệu...';
+  await syncSheets(true);
+}
+init();
 </script>
 </body>
 </html>
- 
