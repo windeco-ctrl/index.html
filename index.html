@@ -311,6 +311,126 @@ a{color:var(--yellow);text-decoration:none}
       </div>
       <div class="report-preview" id="rpt-text"></div>
     </div>
+ 
+<div id="page-guide" class="page">
+  <div class="page-header"><div><div class="page-title">Hướng dẫn sử dụng</div><div class="page-sub">Giải thích đầy đủ tính năng, chỉ số và ngưỡng đánh giá</div></div></div>
+ 
+  <div class="card">
+    <div class="card-title">Các tính năng chính</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="background:var(--bg3);border-radius:8px;padding:14px;border-left:3px solid var(--yellow)">
+        <div style="font-weight:600;color:var(--yellow);margin-bottom:6px">📊 Tổng quan</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8">Xem tất cả kênh cùng lúc. Lọc theo <strong style="color:var(--text)">7 / 28 / 60 / 365 ngày</strong> hoặc tuỳ chỉnh ngày bắt đầu–kết thúc. Bao gồm biểu đồ cột so sánh lượt xem, biểu đồ cột engagement rate, và biểu đồ đường xu hướng lượt xem theo thời gian.</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:14px;border-left:3px solid #60a5fa">
+        <div style="font-weight:600;color:#60a5fa;margin-bottom:6px">📺 Các kênh</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8">Xem danh sách tất cả kênh với 5 chỉ số tóm tắt. <strong style="color:var(--text)">Click vào kênh</strong> để xem bảng so sánh 28 ngày gần nhất vs 28 ngày trước, biểu đồ xu hướng, và danh sách video với màu xanh/vàng/đỏ theo ngưỡng đánh giá riêng của kênh.</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:14px;border-left:3px solid #f87171">
+        <div style="font-weight:600;color:#f87171;margin-bottom:6px">🔔 Cảnh báo</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8"><strong style="color:var(--text)">Click vào tên kênh</strong> để mở/đóng. Mỗi cảnh báo có <strong style="color:var(--text)">hành động đề xuất cụ thể</strong> bên dưới. Màu đỏ = nguy hiểm cần xử lý ngay, vàng = cần chú ý, xanh = kênh đang tốt.</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:14px;border-left:3px solid #4ade80">
+        <div style="font-weight:600;color:#4ade80;margin-bottom:6px">📄 Báo cáo</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8">Chọn kênh và kỳ báo cáo. Bấm <strong style="color:var(--text)">Tạo báo cáo</strong> để xem preview đầy đủ với biểu đồ xu hướng, bảng số liệu, so sánh kỳ trước và hành động đề xuất. Bấm <strong style="color:var(--text)">Tải .docx</strong> để xuất file Word.</div>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="card">
+    <div class="card-title">Giải thích từng chỉ số</div>
+    <table class="tbl">
+      <thead><tr><th>Chỉ số</th><th>Công thức tính</th><th>Ý nghĩa</th><th>Ngưỡng tốt</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Watch Rate</strong></td>
+          <td style="font-family:monospace;font-size:12px">Avg Watch Time ÷ Thời lượng × 100</td>
+          <td style="color:var(--text2);font-size:13px">% thời gian trung bình người xem ở lại video. Phản ánh chất lượng hook đầu video. Watch Rate thấp = người xem bỏ ngay từ những giây đầu.</td>
+          <td>Tuỳ thời lượng — xem bảng dưới</td>
+        </tr>
+        <tr>
+          <td><strong>Completion Rate</strong></td>
+          <td style="font-family:monospace;font-size:12px">Avg Watch Time ÷ Thời lượng × 100</td>
+          <td style="color:var(--text2);font-size:13px">% hoàn thành video. Video ngắn (&lt;15s) có thể &gt;100% do TikTok tự loop. Completion thấp = nội dung giữa video bị loãng hoặc video quá dài.</td>
+          <td>Tuỳ thời lượng — xem bảng dưới</td>
+        </tr>
+        <tr>
+          <td><strong>Engagement Rate (ER)</strong></td>
+          <td style="font-family:monospace;font-size:12px">(Likes + Cmts×2 + Shares×3) ÷ Views × 100</td>
+          <td style="color:var(--text2);font-size:13px">Mức độ tương tác tổng hợp. Share được nhân 3 vì có giá trị viral cao nhất. Comment nhân 2 vì thể hiện cảm xúc mạnh. ER thấp = nội dung không chạm được cảm xúc người xem.</td>
+          <td><span class="val-low">&lt;3% Thấp</span> · <span class="val-mid">3–5% TB</span> · <span class="val-high">&gt;5% Tốt</span></td>
+        </tr>
+        <tr>
+          <td><strong>Share Rate</strong></td>
+          <td style="font-family:monospace;font-size:12px">Shares ÷ Views × 100</td>
+          <td style="color:var(--text2);font-size:13px">Khả năng viral tự nhiên. Video được share nhiều = nội dung chạm cảm xúc mạnh hoặc có giá trị chia sẻ cao (hài hước, cảm động, hữu ích).</td>
+          <td><span class="val-low">&lt;0.5% Thấp</span> · <span class="val-high">&gt;1% Tốt</span></td>
+        </tr>
+        <tr>
+          <td><strong>Avg Watch Time</strong></td>
+          <td style="font-family:monospace;font-size:12px">Trung bình giây người xem ở lại</td>
+          <td style="color:var(--text2);font-size:13px">Số giây trung bình người xem ở lại video. TikTok dùng chỉ số này để quyết định có đẩy video ra FYP tiếp hay không. Avg watch time càng cao, TikTok càng đẩy mạnh.</td>
+          <td>Càng cao càng tốt</td>
+        </tr>
+        <tr>
+          <td><strong>FYP Traffic</strong></td>
+          <td style="font-family:monospace;font-size:12px">—</td>
+          <td style="color:var(--text2);font-size:13px">% view đến từ For You Page. Kênh có FYP cao (80%+) phụ thuộc nhiều vào thuật toán TikTok — watch rate và completion thường thấp hơn kênh có nhiều follower xem trực tiếp.</td>
+          <td>Tuỳ mục tiêu kênh</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+ 
+  <div class="card">
+    <div class="card-title">Ngưỡng mặc định theo thời lượng video</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.7">Video càng dài → người xem càng dễ bỏ → Watch Rate và Completion tự nhiên thấp hơn. <strong style="color:var(--text)">Không thể so sánh kênh video 30s với kênh video 150s bằng cùng một ngưỡng.</strong></div>
+    <table class="tbl">
+      <thead><tr><th>Thời lượng TB</th><th>Watch Rate 🔴</th><th>Watch Rate 🟡</th><th>Watch Rate 🟢</th><th>Completion 🔴</th><th>Completion 🟡</th><th>Completion 🟢</th></tr></thead>
+      <tbody>
+        <tr><td><strong>&lt;30s</strong></td><td class="val-low">&lt;35%</td><td class="val-mid">35–55%</td><td class="val-high">&gt;55%</td><td class="val-low">&lt;50%</td><td class="val-mid">50–75%</td><td class="val-high">&gt;75%</td></tr>
+        <tr><td><strong>30–60s</strong></td><td class="val-low">&lt;28%</td><td class="val-mid">28–45%</td><td class="val-high">&gt;45%</td><td class="val-low">&lt;40%</td><td class="val-mid">40–65%</td><td class="val-high">&gt;65%</td></tr>
+        <tr><td><strong>60–80s</strong></td><td class="val-low">&lt;25%</td><td class="val-mid">25–40%</td><td class="val-high">&gt;40%</td><td class="val-low">&lt;35%</td><td class="val-mid">35–55%</td><td class="val-high">&gt;55%</td></tr>
+        <tr><td><strong>80–100s</strong></td><td class="val-low">&lt;22%</td><td class="val-mid">22–36%</td><td class="val-high">&gt;36%</td><td class="val-low">&lt;30%</td><td class="val-mid">30–48%</td><td class="val-high">&gt;48%</td></tr>
+        <tr><td><strong>100–130s</strong></td><td class="val-low">&lt;20%</td><td class="val-mid">20–32%</td><td class="val-high">&gt;32%</td><td class="val-low">&lt;28%</td><td class="val-mid">28–42%</td><td class="val-high">&gt;42%</td></tr>
+        <tr><td><strong>&gt;130s</strong></td><td class="val-low">&lt;18%</td><td class="val-mid">18–30%</td><td class="val-high">&gt;30%</td><td class="val-low">&lt;25%</td><td class="val-mid">25–40%</td><td class="val-high">&gt;40%</td></tr>
+      </tbody>
+    </table>
+  </div>
+ 
+  <div class="card">
+    <div class="card-title">Ngưỡng từng kênh và lý do</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Bảng này tự động cập nhật theo kênh đã thêm vào hệ thống.</div>
+    <table class="tbl" id="guide-thresh-table">
+      <thead><tr><th>Kênh</th><th>Thời lượng TB</th><th>Thể loại</th><th>Watch Rate 🔴/🟡/🟢</th><th>Completion 🔴/🟡/🟢</th><th>Lý do ngưỡng này</th></tr></thead>
+      <tbody id="guide-thresh-body"><tr><td colspan="6" style="color:var(--text2);text-align:center">Đang tải...</td></tr></tbody>
+    </table>
+  </div>
+ 
+  <div class="card">
+    <div class="card-title">Cách đồng bộ Google Sheets</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">Quy trình</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.9">
+          1. Nhân sự nhập video vào Google Sheets<br>
+          2. Mở web → bấm <strong style="color:var(--text)">↻ Đồng bộ Sheets</strong> trên trang Tổng quan<br>
+          3. Web tự đọc tất cả tab và cập nhật toàn bộ dữ liệu<br>
+          4. Web cũng <strong style="color:var(--text)">tự đồng bộ khi mở trang</strong> nếu đã cấu hình
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">Cấu trúc Sheets</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.9">
+          Tab <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">Channels</code>: id | name | handle | tab_name | category | followers<br>
+          Tab <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">TênKênh_Videos</code>: Tuần | Tên video | Ngày (DD/MM/YYYY) | Thời lượng(s) | Lượt xem | Avg watch(s) | Like | Comment | Share | Completion%
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+ 
   </div>
 </div>
  
@@ -341,159 +461,6 @@ a{color:var(--yellow);text-decoration:none}
     <div class="setup-step"><div class="step-num">4</div><div class="step-body"><h3>Tạo API Key</h3><ul><li>Vào <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a></li><li>Bật Google Sheets API → Credentials → tạo API Key</li></ul></div></div>
     <div class="setup-step"><div class="step-num">5</div><div class="step-body"><h3>Chia sẻ Sheet</h3><p>Share → <em>"Anyone with the link can view"</em></p></div></div>
   </div>
-</div>
- 
-</main>
-</div>
-<!-- GUIDE PAGE -->
-<div id="page-guide" class="page">
-  <div class="page-header"><div><div class="page-title">Hướng dẫn sử dụng</div><div class="page-sub">Giải thích tính năng và ngưỡng đánh giá từng kênh</div></div></div>
- 
-  <div class="card">
-    <div class="card-title">Tổng quan tính năng</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div style="background:var(--bg3);border-radius:8px;padding:14px">
-        <div style="font-weight:600;color:var(--yellow);margin-bottom:6px">📊 Tổng quan</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.8">Xem tất cả kênh cùng lúc. Lọc theo 7/28/60/365 ngày hoặc tuỳ chỉnh. Biểu đồ so sánh lượt xem và engagement rate. Bảng xếp hạng kênh theo hiệu suất.</div>
-      </div>
-      <div style="background:var(--bg3);border-radius:8px;padding:14px">
-        <div style="font-weight:600;color:var(--yellow);margin-bottom:6px">📺 Các kênh</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.8">Xem chi tiết từng kênh. Click vào kênh → xem danh sách video với màu sắc đánh giá. Bảng so sánh kỳ này vs kỳ trước tự động. Nhập video thủ công hoặc đồng bộ từ Sheets.</div>
-      </div>
-      <div style="background:var(--bg3);border-radius:8px;padding:14px">
-        <div style="font-weight:600;color:var(--yellow);margin-bottom:6px">🔔 Cảnh báo</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.8">Cảnh báo riêng từng kênh dựa trên ngưỡng đã thiết lập. Click vào tên kênh để mở/đóng. Màu đỏ = nguy hiểm, vàng = cần chú ý, xanh = tốt.</div>
-      </div>
-      <div style="background:var(--bg3);border-radius:8px;padding:14px">
-        <div style="font-weight:600;color:var(--yellow);margin-bottom:6px">📄 Báo cáo</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.8">Tạo báo cáo theo kênh hoặc tất cả. Chọn kỳ báo cáo linh hoạt. Preview biểu đồ và văn bản trước khi tải. Xuất file Word (.docx) chuyên nghiệp.</div>
-      </div>
-    </div>
-  </div>
- 
-  <div class="card">
-    <div class="card-title">Giải thích các chỉ số</div>
-    <table class="tbl">
-      <thead><tr><th>Chỉ số</th><th>Công thức</th><th>Ý nghĩa</th><th>Ngưỡng tốt chung</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Watch Rate</strong></td><td>Avg Watch Time ÷ Thời lượng × 100</td><td>% thời gian người xem ở lại video. Hook đầu video kém → Watch Rate thấp</td><td>Tuỳ thời lượng (xem bảng dưới)</td></tr>
-        <tr><td><strong>Completion Rate</strong></td><td>Avg Watch Time ÷ Thời lượng × 100</td><td>% hoàn thành video. Video ngắn có thể >100% do TikTok loop lại</td><td>Tuỳ thời lượng (xem bảng dưới)</td></tr>
-        <tr><td><strong>Engagement Rate</strong></td><td>(Likes + Cmts×2 + Shares×3) ÷ Views × 100</td><td>Mức độ tương tác. Share được nhân 3 vì có giá trị viral cao nhất</td><td>&gt;3% là ổn, &gt;5% là tốt</td></tr>
-        <tr><td><strong>Share Rate</strong></td><td>Shares ÷ Views × 100</td><td>Khả năng viral tự nhiên. Video được share nhiều = nội dung chạm cảm xúc</td><td>&gt;1% là tốt</td></tr>
-      </tbody>
-    </table>
-  </div>
- 
-  <div class="card">
-    <div class="card-title">Ngưỡng Watch Rate & Completion Rate — Tại sao mỗi kênh khác nhau?</div>
-    <div style="background:var(--yellow-bg);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:14px;font-size:13px;line-height:1.8">
-      <strong style="color:var(--yellow)">Nguyên tắc cốt lõi:</strong> Video càng dài, người xem càng dễ bỏ → Watch Rate và Completion tự nhiên thấp hơn. Không thể so sánh kênh video 30s với kênh video 150s bằng cùng một ngưỡng.
-    </div>
-    <table class="tbl" id="guide-thresh-table">
-      <thead><tr><th>Kênh</th><th>Thời lượng TB</th><th>Thể loại</th><th>Watch Rate 🔴/🟡/🟢</th><th>Completion 🔴/🟡/🟢</th><th>Lý do</th></tr></thead>
-      <tbody id="guide-thresh-body"></tbody>
-    </table>
-  </div>
- 
-  <div class="card">
-    <div class="card-title">Ngưỡng mặc định theo thời lượng video</div>
-    <table class="tbl">
-      <thead><tr><th>Thời lượng</th><th>Watch Rate Thấp</th><th>Watch Rate Cao</th><th>Completion Thấp</th><th>Completion Cao</th><th>Lý do</th></tr></thead>
-      <tbody>
-        <tr><td>&lt;30s</td><td class="val-low">&lt;35%</td><td class="val-high">&gt;55%</td><td class="val-low">&lt;50%</td><td class="val-high">&gt;75%</td><td style="color:var(--text2);font-size:12px">Video ngắn, TikTok loop → completion có thể &gt;100%</td></tr>
-        <tr><td>30–60s</td><td class="val-low">&lt;28%</td><td class="val-high">&gt;45%</td><td class="val-low">&lt;40%</td><td class="val-high">&gt;65%</td><td style="color:var(--text2);font-size:12px">Trending sound/duet giữ người xem tốt</td></tr>
-        <tr><td>60–80s</td><td class="val-low">&lt;25%</td><td class="val-high">&gt;40%</td><td class="val-low">&lt;35%</td><td class="val-high">&gt;55%</td><td style="color:var(--text2);font-size:12px">Cần storytelling rõ ràng để giữ người xem</td></tr>
-        <tr><td>80–100s</td><td class="val-low">&lt;22%</td><td class="val-high">&gt;36%</td><td class="val-low">&lt;30%</td><td class="val-high">&gt;48%</td><td style="color:var(--text2);font-size:12px">Cliffhanger và hook mạnh giúp giữ completion</td></tr>
-        <tr><td>100–130s</td><td class="val-low">&lt;20%</td><td class="val-high">&gt;32%</td><td class="val-low">&lt;28%</td><td class="val-high">&gt;42%</td><td style="color:var(--text2);font-size:12px">80% FYP làm nhiều người bỏ giữa chừng là bình thường</td></tr>
-        <tr><td>&gt;130s</td><td class="val-low">&lt;18%</td><td class="val-high">&gt;30%</td><td class="val-low">&lt;25%</td><td class="val-high">&gt;40%</td><td style="color:var(--text2);font-size:12px">Storytelling/cliffhanger giúp nhưng video rất dài tự nhiên thấp</td></tr>
-      </tbody>
-    </table>
-  </div>
- 
-  <div class="card">
-    <div class="card-title">Cách đồng bộ Google Sheets</div>
-    <div style="font-size:13px;color:var(--text2);line-height:1.9">
-      <p style="margin-bottom:8px">Nhân sự nhập dữ liệu vào Google Sheets → bấm <strong style="color:var(--text)">Đồng bộ Sheets</strong> trên trang Tổng quan → website tự đọc và cập nhật.</p>
-      <p style="margin-bottom:8px"><strong style="color:var(--text)">Cấu trúc Sheets:</strong> 1 file, nhiều tab. Tab <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;font-family:monospace">Channels</code> chứa danh sách kênh. Mỗi kênh có 1 tab video tên dạng <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;font-family:monospace">TênKênh_Videos</code>.</p>
-      <p><strong style="color:var(--text)">Cột tab Videos:</strong> Tuần | Tên video | Ngày (DD/MM/YYYY) | Thời lượng(s) | Lượt xem | Avg watch(s) | Like | Comment | Share | Completion%</p>
-    </div>
-  </div>
-</div>
- 
-<!-- MODAL: Add Channel -->
-<div class="modal-overlay" id="modal-add-ch">
-  <div class="modal">
-    <div class="modal-title">Thêm kênh mới</div>
-    <div class="form-row">
-      <div class="form-group"><label>Tên nghệ sĩ / Kênh</label><input type="text" id="nc-name" placeholder="VD: Sơn Tùng MTP"></div>
-      <div class="form-group"><label>TikTok Handle</label><input type="text" id="nc-handle" placeholder="@username"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Followers hiện tại</label><input type="number" id="nc-followers" placeholder="0"></div>
-      <div class="form-group"><label>Thể loại</label>
-        <select id="nc-cat" onchange="toggleCatOther()">
-          <option>Giải trí</option><option>Giáo dục</option><option>Lifestyle</option>
-          <option>Truyền cảm hứng</option><option>Bán hàng</option><option>Tin tức</option><option>Khác</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group" id="nc-other-wrap" style="display:none;margin-bottom:10px">
-      <label>Nhập thể loại</label><input type="text" id="nc-other" placeholder="Thể loại của bạn...">
-    </div>
-    <div style="background:rgba(248,229,89,.06);border:1px solid rgba(248,229,89,.15);border-radius:8px;padding:14px;margin-bottom:12px">
-      <div style="font-size:11px;font-weight:600;color:var(--yellow);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Ngưỡng đánh giá riêng cho kênh này</div>
-      <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Watch Rate — % thời gian xem / thời lượng video</div>
-      <div class="form-row-3" style="margin-bottom:10px">
-        <div class="form-group"><label>🔴 Thấp dưới (%)</label><input type="number" id="nc-wr-low" placeholder="VD: 22" step="0.1"></div>
-        <div class="form-group"><label>🟢 Cao trên (%)</label><input type="number" id="nc-wr-high" placeholder="VD: 35" step="0.1"></div>
-        <div class="form-group"><label>Thời lượng TB (s)</label><input type="number" id="nc-duration" placeholder="VD: 90"></div>
-      </div>
-      <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Completion Rate — % hoàn thành video</div>
-      <div class="form-row-3" style="margin-bottom:10px">
-        <div class="form-group"><label>🔴 Thấp dưới (%)</label><input type="number" id="nc-comp-low" placeholder="VD: 30" step="0.1"></div>
-        <div class="form-group"><label>🟢 Cao trên (%)</label><input type="number" id="nc-comp-high" placeholder="VD: 50" step="0.1"></div>
-        <div class="form-group"><label>ER Rate 🔴 dưới (%)</label><input type="number" id="nc-er-low" placeholder="VD: 3" step="0.1"></div>
-      </div>
-      <div style="font-size:11px;color:var(--text3);font-style:italic">Để trống = dùng ngưỡng mặc định. Khoảng giữa 2 giá trị = Trung bình 🟡</div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal('modal-add-ch')">Huỷ</button>
-      <button class="btn btn-primary" onclick="addChannel()">Thêm kênh</button>
-    </div>
-  </div>
-</div>
- 
-<!-- MODAL: Add Video -->
-<div class="modal-overlay" id="modal-video">
-  <div class="modal">
-    <div class="modal-title">Nhập số liệu video</div>
-    <div class="form-row">
-      <div class="form-group"><label>Kênh</label><select id="v-channel"></select></div>
-      <div class="form-group"><label>Tên video</label><input type="text" id="v-title" placeholder="Tiêu đề video"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Ngày đăng</label><input type="date" id="v-date"></div>
-      <div class="form-group"><label>Thời lượng (giây)</label><input type="number" id="v-duration" placeholder="60"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Lượt xem</label><input type="number" id="v-views" placeholder="0"></div>
-      <div class="form-group"><label>Avg Watch Time (giây)</label><input type="number" id="v-avgwatch" placeholder="0"></div>
-    </div>
-    <div class="form-row-3">
-      <div class="form-group"><label>Likes</label><input type="number" id="v-likes" placeholder="0"></div>
-      <div class="form-group"><label>Comments</label><input type="number" id="v-comments" placeholder="0"></div>
-      <div class="form-group"><label>Shares</label><input type="number" id="v-shares" placeholder="0"></div>
-    </div>
-    <div class="form-group" style="margin-bottom:10px">
-      <label>Ghi chú</label><input type="text" id="v-note" placeholder="VD: viral, collab, ads...">
-    </div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal('modal-video')">Huỷ</button>
-      <button class="btn btn-primary" onclick="saveVideo()">Lưu</button>
-    </div>
-  </div>
-</div>
- 
 <script>
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 const K_CH='tt_channels',K_VID='tt_videos',K_CFG='tt_config';
@@ -883,7 +850,7 @@ function rateLevel(val,low,high){
 function buildChannelAlerts(c,vids){
   const alerts=[];
   const cv=vids.filter(v=>v.channel_id===c.id);
-  if(!cv.length){alerts.push({type:'warn',msg:'Chưa có video nào được nhập cho kênh này'});return alerts;}
+  if(!cv.length){alerts.push({type:'warn',msg:'Chưa có video nào được nhập cho kênh này',actions:['📅 Lên lịch đăng tối thiểu 3 video/tuần','🗂️ Chuẩn bị content bank 2 tuần trước']});return alerts;}
   const views=cv.reduce((a,v)=>a+(+v.views||0),0);
   const likes=cv.reduce((a,v)=>a+(+v.likes||0),0);
   const comments=cv.reduce((a,v)=>a+(+v.comments||0),0);
@@ -892,15 +859,29 @@ function buildChannelAlerts(c,vids){
   const avgWr=cv.reduce((a,v)=>a+watchRate(v),0)/cv.length;
   const avgComp=cv.reduce((a,v)=>a+completion(v),0)/cv.length;
   const th=getThresh(c,cv);
-  if(er<th.er_low)alerts.push({type:'danger',msg:`Engagement rate thấp (${er.toFixed(1)}%) — ngưỡng kênh này: >${th.er_low}%`});
-  if(avgWr<th.wr_low)alerts.push({type:'danger',msg:`Watch Rate thấp (${avgWr.toFixed(1)}%) — ngưỡng kênh này: Thấp <${th.wr_low}% / Cao >${th.wr_high}%`});
-  else if(avgWr<th.wr_high)alerts.push({type:'warn',msg:`Watch Rate trung bình (${avgWr.toFixed(1)}%) — ngưỡng cao kênh này: >${th.wr_high}%`});
-  if(avgComp<th.comp_low)alerts.push({type:'danger',msg:`Completion Rate thấp (${avgComp.toFixed(1)}%) — ngưỡng kênh này: Thấp <${th.comp_low}% / Cao >${th.comp_high}%`});
-  else if(avgComp<th.comp_high)alerts.push({type:'warn',msg:`Completion Rate trung bình (${avgComp.toFixed(1)}%) — ngưỡng cao kênh này: >${th.comp_high}%`});
-  if(cv.length<3)alerts.push({type:'warn',msg:`Ít video trong kỳ (${cv.length} video) — nên tăng tần suất đăng`});
+  if(er<th.er_low)alerts.push({type:'danger',
+    msg:`Engagement rate thấp (${er.toFixed(1)}%) — ngưỡng kênh này: >${th.er_low}%`,
+    actions:['❓ Đặt câu hỏi trong video để kích thích comment','📣 CTA rõ ràng: "Share cho bạn bè nếu thấy đúng"','🤝 Collab với kênh khác để tiếp cận audience mới','💬 Reply comment bằng video để tăng tương tác']});
+  if(avgWr<th.wr_low)alerts.push({type:'danger',
+    msg:`Watch Rate thấp (${avgWr.toFixed(1)}%) — ngưỡng kênh này: Thấp <${th.wr_low}% / Cao >${th.wr_high}%`,
+    actions:['🎯 Viết lại hook 3 giây đầu — đặt câu hỏi gây tò mò hoặc reveal kết quả ngay','✂️ Cắt bỏ phần intro dài, vào nội dung chính trong 2 giây đầu','🎵 Thử trending sound để TikTok đẩy đúng tệp hơn','📝 Thêm text overlay ngay giây đầu để giữ người xem không bật âm']});
+  else if(avgWr<th.wr_high)alerts.push({type:'warn',
+    msg:`Watch Rate trung bình (${avgWr.toFixed(1)}%) — ngưỡng cao kênh này: >${th.wr_high}%`,
+    actions:['🔁 Test A/B hook: quay 2 version đầu video khác nhau, so sánh watch rate','📊 Xem TikTok Studio để biết người xem drop ở giây nào']});
+  if(avgComp<th.comp_low)alerts.push({type:'danger',
+    msg:`Completion Rate thấp (${avgComp.toFixed(1)}%) — ngưỡng kênh này: Thấp <${th.comp_low}% / Cao >${th.comp_high}%`,
+    actions:['⏱️ Rút ngắn thời lượng video — nội dung không đủ mạnh giữ đến hết','🎬 Thêm cliffhanger giữa video: "Xem tiếp để biết kết quả..."','🔢 Chia nhỏ thành series nhiều tập thay vì 1 video dài','📊 Kiểm tra điểm drop-off trong TikTok Studio']});
+  else if(avgComp<th.comp_high)alerts.push({type:'warn',
+    msg:`Completion Rate trung bình (${avgComp.toFixed(1)}%) — ngưỡng cao kênh này: >${th.comp_high}%`,
+    actions:['💡 Thêm "payoff" rõ ràng ở cuối video — người xem cần lý do xem hết','🔔 CTA cuối video: "Subscribe để xem phần tiếp theo"']});
+  if(cv.length<3)alerts.push({type:'warn',
+    msg:`Ít video trong kỳ (${cv.length} video) — nên tăng tần suất đăng`,
+    actions:['📅 Lên lịch đăng đều tối thiểu 3 video/tuần','🗂️ Chuẩn bị content bank 2 tuần để không bị gián đoạn','♻️ Tái sử dụng format video đã viral trước đó']});
   const recent=cv.filter(v=>{const d=new Date(v.date);const now=new Date();return(now-d)/(1000*60*60*24)<=7;});
-  if(!recent.length)alerts.push({type:'warn',msg:'Không có video mới trong 7 ngày gần đây'});
-  if(!alerts.length)alerts.push({type:'info',msg:`Kênh đang hoạt động tốt — ER ${er.toFixed(1)}%, Watch Rate ${avgWr.toFixed(1)}%`});
+  if(!recent.length)alerts.push({type:'warn',
+    msg:'Không có video mới trong 7 ngày gần đây',
+    actions:['📅 Kiểm tra lịch đăng bài — đăng đúng giờ cao điểm (7-9h sáng, 12h trưa, 8-10h tối)','🏷️ Optimize hashtag: 3-5 hashtag mix lớn/nhỏ','🔄 Tái sử dụng format đã viral']});
+  if(!alerts.length)alerts.push({type:'info',msg:`Kênh đang hoạt động tốt — ER ${er.toFixed(1)}%, Watch Rate ${avgWr.toFixed(1)}%`,actions:[]});
   return alerts;
 }
  
@@ -923,7 +904,16 @@ function renderAlerts(){
         <svg class="toggle-arrow" id="arrow-${c.id}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="alert-ch-body" id="alert-body-${c.id}">
-        ${alerts.map(a=>`<div class="alert-item alert-${a.type}"><div class="dot dot-${a.type==='danger'?'red':a.type==='warn'?'amber':'green'}"></div><span>${a.msg}</span></div>`).join('')}
+        ${alerts.map(a=>`
+          <div class="alert-item alert-${a.type}" style="flex-direction:column;align-items:flex-start;gap:8px">
+            <div style="display:flex;gap:8px;align-items:flex-start">
+              <div class="dot dot-${a.type==='danger'?'red':a.type==='warn'?'amber':'green'}" style="margin-top:5px"></div>
+              <span style="font-weight:500">${a.msg}</span>
+            </div>
+            ${a.actions&&a.actions.length?`<div style="padding-left:16px;display:flex;flex-direction:column;gap:4px">
+              ${a.actions.map(act=>`<div style="font-size:12px;opacity:.85;display:flex;gap:6px"><span style="opacity:.6">→</span><span>${act}</span></div>`).join('')}
+            </div>`:''}
+          </div>`).join('')}
       </div>
     </div>`;
   }).join(''):'<div style="color:var(--text2);font-size:13px;padding:16px">Chưa có kênh nào.</div>';
@@ -1518,3 +1508,4 @@ init();
 </script>
 </body>
 </html>
+ 
