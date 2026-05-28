@@ -946,6 +946,64 @@ function updateAlertBadge(){
   if(w>0){badge.textContent=w;badge.style.display='inline';}else{badge.style.display='none';}
 }
  
+// ─── REPORT ACTIONS ──────────────────────────────────────────────────────────
+const ACTIONS={
+  wr_low:[
+    '🎯 Viết lại hook 3 giây đầu — đặt câu hỏi gây tò mò hoặc reveal kết quả ngay',
+    '✂️ Cắt bỏ phần intro dài, vào nội dung chính trong 2 giây đầu',
+    '🎵 Thử trending sound để TikTok đẩy vào FYP đúng tệp hơn',
+  ],
+  wr_mid:[
+    '🔁 Test A/B hook: quay 2 version đầu video khác nhau, so sánh watch rate',
+    '📝 Thêm text overlay ngay giây đầu để giữ người xem không bật âm',
+  ],
+  comp_low:[
+    '⏱️ Rút ngắn thời lượng video — nếu nội dung không đủ mạnh để giữ người xem đến hết',
+    '🎬 Thêm cliffhanger giữa video: "Xem tiếp để biết kết quả..."',
+    '🔢 Chia nhỏ nội dung thành series nhiều tập thay vì 1 video dài',
+    '📊 Kiểm tra điểm drop-off trong TikTok Studio để biết người xem bỏ ở phút nào',
+  ],
+  comp_mid:[
+    '💡 Thêm "payoff" rõ ràng ở cuối video để người xem có lý do xem hết',
+    '🔔 CTA cuối video: "Subscribe để xem phần tiếp theo"',
+  ],
+  er_low:[
+    '❓ Đặt câu hỏi trong video để kích thích comment',
+    '📣 CTA rõ ràng: "Share cho bạn bè nếu bạn thấy đúng"',
+    '🤝 Collab với kênh khác để tiếp cận tệp audience mới',
+    '💬 Reply comment bằng video để tăng tương tác',
+  ],
+  views_down:[
+    '📅 Kiểm tra lịch đăng bài — đăng đúng giờ cao điểm (7-9h sáng, 12h trưa, 8-10h tối)',
+    '🏷️ Optimize hashtag — dùng 3-5 hashtag mix lớn/nhỏ thay vì chỉ hashtag lớn',
+    '🔄 Tái sử dụng format video đã viral trước đó',
+  ],
+  no_video:[
+    '📆 Lên lịch đăng đều đặn tối thiểu 3 video/tuần',
+    '🗂️ Chuẩn bị content bank 2 tuần để không bị gián đoạn',
+  ],
+};
+function buildReportActions(ch,cv,th,cs,ps){
+  if(!cv.length)return '';
+  const actions=[];
+  const wrL=rateLevel(cs.wr,th.wr_low,th.wr_high);
+  const compL=rateLevel(cs.comp,th.comp_low,th.comp_high);
+  const erL=rateLevel(parseFloat(cs.er),th.er_low,th.er_low*2);
+  if(wrL.label==='Thấp')ACTIONS.wr_low.forEach(a=>actions.push({type:'danger',txt:a}));
+  else if(wrL.label==='TB')ACTIONS.wr_mid.forEach(a=>actions.push({type:'warn',txt:a}));
+  if(compL.label==='Thấp')ACTIONS.comp_low.forEach(a=>actions.push({type:'danger',txt:a}));
+  else if(compL.label==='TB')ACTIONS.comp_mid.forEach(a=>actions.push({type:'warn',txt:a}));
+  if(erL.label==='Thấp')ACTIONS.er_low.forEach(a=>actions.push({type:'danger',txt:a}));
+  if(ps&&ps.n>0&&cs.views<ps.views)ACTIONS.views_down.forEach(a=>actions.push({type:'warn',txt:a}));
+  if(!actions.length)return `<div style="background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:6px;padding:10px 14px;font-size:13px;color:#86efac;margin-top:8px">✅ Kênh đang hoạt động tốt trong kỳ này — tiếp tục duy trì format hiện tại</div>`;
+  return `<div style="margin-top:10px">
+    <div style="font-size:11px;font-weight:600;color:var(--yellow);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">💡 Hành động đề xuất</div>
+    ${actions.map(a=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:7px 10px;border-radius:6px;margin-bottom:5px;font-size:12px;background:${a.type==='danger'?'rgba(248,113,113,.08)':'rgba(251,191,36,.08)'};border:1px solid ${a.type==='danger'?'rgba(248,113,113,.2)':'rgba(251,191,36,.2)'};color:${a.type==='danger'?'#fca5a5':'#fde68a'}">
+      <span style="flex-shrink:0">→</span><span>${a.txt}</span>
+    </div>`).join('')}
+  </div>`;
+}
+ 
 // ─── REPORT ───────────────────────────────────────────────────────────────────
 let _reportText='';
 let _rptChartInst=null;
@@ -997,6 +1055,9 @@ function generateReport(){
     const pWr=pv.length?+(pv.reduce((a,v)=>a+watchRate(v),0)/pv.length).toFixed(1):0;
     const pComp=pv.length?+(pv.reduce((a,v)=>a+completion(v),0)/pv.length).toFixed(1):0;
     const th=getThresh(c,cv);
+    // Build cur/prev stats for action recommendations
+    const _cs={wr:parseFloat(avgWr),comp:parseFloat(avgComp),er:parseFloat(er),views,n:cv.length};
+    const _ps={wr:parseFloat(pWr),comp:parseFloat(pComp),er:parseFloat(pEr),views:pViews,n:pv.length};
     const wrL=rateLevel(avgWr,th.wr_low,th.wr_high);
     const compL=rateLevel(avgComp,th.comp_low,th.comp_high);
     const top=cv.length?[...cv].sort((a,b)=>(+b.views||0)-(+a.views||0))[0]:null;
@@ -1017,7 +1078,7 @@ function generateReport(){
       </div>
       ${pv.length?`<div style="font-size:12px;color:var(--text2);background:var(--bg3);border-radius:6px;padding:8px 12px;margin-bottom:10px">So với kỳ trước: Views ${fmtN(pViews)} → ${fmtN(views)} | WR ${pWr}% → ${avgWr}% | Comp ${pComp}% → ${avgComp}%</div>`:''}
       ${top?`<div style="font-size:12px;color:var(--text2)">🏆 Video nổi bật: <strong style="color:var(--text)">"${top.title}"</strong> — ${fmtN(top.views)} views, WR ${watchRate(top)}%, ER ${engRate(top)}%</div>`:''}
-    </div>`;
+    \n      ${buildReportActions(c,cv,th,_cs,_ps)}</div>`;
  
     txt+=`${c.name} (${c.handle})\n`;
     txt+=`  Followers: ${fmtN(c.followers)} | Video: ${cv.length}\n`;
@@ -1432,7 +1493,7 @@ function nav(tab){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+tab).classList.add('active');
-  const tabs=['overview','channels','alerts','report','guide','_','setup'];
+  const tabs=['overview','channels','alerts','guide','report','_','setup'];
   const idx=tabs.indexOf(tab);
   if(idx>=0)document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
   if(tab==='overview')renderOverview();
