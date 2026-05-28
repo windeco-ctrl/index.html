@@ -140,6 +140,14 @@ a{color:var(--yellow);text-decoration:none}
 /* DETAIL VIEW */
 .detail-back{display:flex;align-items:center;gap:8px;color:var(--text2);font-size:13px;cursor:pointer;margin-bottom:18px;background:none;border:none;font-family:'Inter',sans-serif}
 .detail-back:hover{color:var(--yellow)}
+/* THRESHOLD VALUE COLORS */
+.val-high{color:var(--green)!important;font-weight:600}
+.val-mid{color:var(--amber)!important}
+.val-low{color:var(--red)!important;font-weight:600}
+.val-tag{display:inline-block;font-size:10px;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:500}
+.val-tag-high{background:var(--green-bg);color:var(--green)}
+.val-tag-mid{background:var(--amber-bg);color:var(--amber)}
+.val-tag-low{background:var(--red-bg);color:var(--red)}
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--bg2)}
@@ -169,6 +177,10 @@ a{color:var(--yellow);text-decoration:none}
   <button class="nav-item" onclick="nav('alerts')">
     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     Cảnh báo <span id="alert-badge" style="margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;display:none"></span>
+  </button>
+  <button class="nav-item" onclick="nav('guide')">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Hướng dẫn
   </button>
   <button class="nav-item" onclick="nav('report')">
     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -333,6 +345,80 @@ a{color:var(--yellow);text-decoration:none}
  
 </main>
 </div>
+<!-- GUIDE PAGE -->
+<div id="page-guide" class="page">
+  <div class="page-header"><div><div class="page-title">Hướng dẫn sử dụng</div><div class="page-sub">Giải thích tính năng và ngưỡng đánh giá từng kênh</div></div></div>
+ 
+  <div class="card">
+    <div class="card-title">Tổng quan tính năng</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:var(--bg3);border-radius:8px;padding:14px">
+        <div style="font-weight:600;color:var(--yellow);margin-bottom:6px">📊 Tổng quan</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8">Xem tất cả kênh cùng lúc. Lọc theo 7/28/60/365 ngày hoặc tuỳ chỉnh. Biểu đồ so sánh lượt xem và engagement rate. Bảng xếp hạng kênh theo hiệu suất.</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:14px">
+        <div style="font-weight:600;color:var(--yellow);margin-bottom:6px">📺 Các kênh</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8">Xem chi tiết từng kênh. Click vào kênh → xem danh sách video với màu sắc đánh giá. Bảng so sánh kỳ này vs kỳ trước tự động. Nhập video thủ công hoặc đồng bộ từ Sheets.</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:14px">
+        <div style="font-weight:600;color:var(--yellow);margin-bottom:6px">🔔 Cảnh báo</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8">Cảnh báo riêng từng kênh dựa trên ngưỡng đã thiết lập. Click vào tên kênh để mở/đóng. Màu đỏ = nguy hiểm, vàng = cần chú ý, xanh = tốt.</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:14px">
+        <div style="font-weight:600;color:var(--yellow);margin-bottom:6px">📄 Báo cáo</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8">Tạo báo cáo theo kênh hoặc tất cả. Chọn kỳ báo cáo linh hoạt. Preview biểu đồ và văn bản trước khi tải. Xuất file Word (.docx) chuyên nghiệp.</div>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="card">
+    <div class="card-title">Giải thích các chỉ số</div>
+    <table class="tbl">
+      <thead><tr><th>Chỉ số</th><th>Công thức</th><th>Ý nghĩa</th><th>Ngưỡng tốt chung</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Watch Rate</strong></td><td>Avg Watch Time ÷ Thời lượng × 100</td><td>% thời gian người xem ở lại video. Hook đầu video kém → Watch Rate thấp</td><td>Tuỳ thời lượng (xem bảng dưới)</td></tr>
+        <tr><td><strong>Completion Rate</strong></td><td>Avg Watch Time ÷ Thời lượng × 100</td><td>% hoàn thành video. Video ngắn có thể >100% do TikTok loop lại</td><td>Tuỳ thời lượng (xem bảng dưới)</td></tr>
+        <tr><td><strong>Engagement Rate</strong></td><td>(Likes + Cmts×2 + Shares×3) ÷ Views × 100</td><td>Mức độ tương tác. Share được nhân 3 vì có giá trị viral cao nhất</td><td>&gt;3% là ổn, &gt;5% là tốt</td></tr>
+        <tr><td><strong>Share Rate</strong></td><td>Shares ÷ Views × 100</td><td>Khả năng viral tự nhiên. Video được share nhiều = nội dung chạm cảm xúc</td><td>&gt;1% là tốt</td></tr>
+      </tbody>
+    </table>
+  </div>
+ 
+  <div class="card">
+    <div class="card-title">Ngưỡng Watch Rate & Completion Rate — Tại sao mỗi kênh khác nhau?</div>
+    <div style="background:var(--yellow-bg);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:14px;font-size:13px;line-height:1.8">
+      <strong style="color:var(--yellow)">Nguyên tắc cốt lõi:</strong> Video càng dài, người xem càng dễ bỏ → Watch Rate và Completion tự nhiên thấp hơn. Không thể so sánh kênh video 30s với kênh video 150s bằng cùng một ngưỡng.
+    </div>
+    <table class="tbl" id="guide-thresh-table">
+      <thead><tr><th>Kênh</th><th>Thời lượng TB</th><th>Thể loại</th><th>Watch Rate 🔴/🟡/🟢</th><th>Completion 🔴/🟡/🟢</th><th>Lý do</th></tr></thead>
+      <tbody id="guide-thresh-body"></tbody>
+    </table>
+  </div>
+ 
+  <div class="card">
+    <div class="card-title">Ngưỡng mặc định theo thời lượng video</div>
+    <table class="tbl">
+      <thead><tr><th>Thời lượng</th><th>Watch Rate Thấp</th><th>Watch Rate Cao</th><th>Completion Thấp</th><th>Completion Cao</th><th>Lý do</th></tr></thead>
+      <tbody>
+        <tr><td>&lt;30s</td><td class="val-low">&lt;35%</td><td class="val-high">&gt;55%</td><td class="val-low">&lt;50%</td><td class="val-high">&gt;75%</td><td style="color:var(--text2);font-size:12px">Video ngắn, TikTok loop → completion có thể &gt;100%</td></tr>
+        <tr><td>30–60s</td><td class="val-low">&lt;28%</td><td class="val-high">&gt;45%</td><td class="val-low">&lt;40%</td><td class="val-high">&gt;65%</td><td style="color:var(--text2);font-size:12px">Trending sound/duet giữ người xem tốt</td></tr>
+        <tr><td>60–80s</td><td class="val-low">&lt;25%</td><td class="val-high">&gt;40%</td><td class="val-low">&lt;35%</td><td class="val-high">&gt;55%</td><td style="color:var(--text2);font-size:12px">Cần storytelling rõ ràng để giữ người xem</td></tr>
+        <tr><td>80–100s</td><td class="val-low">&lt;22%</td><td class="val-high">&gt;36%</td><td class="val-low">&lt;30%</td><td class="val-high">&gt;48%</td><td style="color:var(--text2);font-size:12px">Cliffhanger và hook mạnh giúp giữ completion</td></tr>
+        <tr><td>100–130s</td><td class="val-low">&lt;20%</td><td class="val-high">&gt;32%</td><td class="val-low">&lt;28%</td><td class="val-high">&gt;42%</td><td style="color:var(--text2);font-size:12px">80% FYP làm nhiều người bỏ giữa chừng là bình thường</td></tr>
+        <tr><td>&gt;130s</td><td class="val-low">&lt;18%</td><td class="val-high">&gt;30%</td><td class="val-low">&lt;25%</td><td class="val-high">&gt;40%</td><td style="color:var(--text2);font-size:12px">Storytelling/cliffhanger giúp nhưng video rất dài tự nhiên thấp</td></tr>
+      </tbody>
+    </table>
+  </div>
+ 
+  <div class="card">
+    <div class="card-title">Cách đồng bộ Google Sheets</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.9">
+      <p style="margin-bottom:8px">Nhân sự nhập dữ liệu vào Google Sheets → bấm <strong style="color:var(--text)">Đồng bộ Sheets</strong> trên trang Tổng quan → website tự đọc và cập nhật.</p>
+      <p style="margin-bottom:8px"><strong style="color:var(--text)">Cấu trúc Sheets:</strong> 1 file, nhiều tab. Tab <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;font-family:monospace">Channels</code> chứa danh sách kênh. Mỗi kênh có 1 tab video tên dạng <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;font-family:monospace">TênKênh_Videos</code>.</p>
+      <p><strong style="color:var(--text)">Cột tab Videos:</strong> Tuần | Tên video | Ngày (DD/MM/YYYY) | Thời lượng(s) | Lượt xem | Avg watch(s) | Like | Comment | Share | Completion%</p>
+    </div>
+  </div>
+</div>
  
 <!-- MODAL: Add Channel -->
 <div class="modal-overlay" id="modal-add-ch">
@@ -353,6 +439,22 @@ a{color:var(--yellow);text-decoration:none}
     </div>
     <div class="form-group" id="nc-other-wrap" style="display:none;margin-bottom:10px">
       <label>Nhập thể loại</label><input type="text" id="nc-other" placeholder="Thể loại của bạn...">
+    </div>
+    <div style="background:rgba(248,229,89,.06);border:1px solid rgba(248,229,89,.15);border-radius:8px;padding:14px;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:600;color:var(--yellow);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Ngưỡng đánh giá riêng cho kênh này</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Watch Rate — % thời gian xem / thời lượng video</div>
+      <div class="form-row-3" style="margin-bottom:10px">
+        <div class="form-group"><label>🔴 Thấp dưới (%)</label><input type="number" id="nc-wr-low" placeholder="VD: 22" step="0.1"></div>
+        <div class="form-group"><label>🟢 Cao trên (%)</label><input type="number" id="nc-wr-high" placeholder="VD: 35" step="0.1"></div>
+        <div class="form-group"><label>Thời lượng TB (s)</label><input type="number" id="nc-duration" placeholder="VD: 90"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Completion Rate — % hoàn thành video</div>
+      <div class="form-row-3" style="margin-bottom:10px">
+        <div class="form-group"><label>🔴 Thấp dưới (%)</label><input type="number" id="nc-comp-low" placeholder="VD: 30" step="0.1"></div>
+        <div class="form-group"><label>🟢 Cao trên (%)</label><input type="number" id="nc-comp-high" placeholder="VD: 50" step="0.1"></div>
+        <div class="form-group"><label>ER Rate 🔴 dưới (%)</label><input type="number" id="nc-er-low" placeholder="VD: 3" step="0.1"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);font-style:italic">Để trống = dùng ngưỡng mặc định. Khoảng giữa 2 giá trị = Trung bình 🟡</div>
     </div>
     <div class="modal-footer">
       <button class="btn" onclick="closeModal('modal-add-ch')">Huỷ</button>
@@ -437,6 +539,45 @@ function filterByPeriod(videos,period){
 }
  
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
+function getPrevPeriod(period){
+  if(period.days==='custom'){
+    const diff=period.to-period.from;
+    return{days:'custom',from:new Date(period.from-diff),to:new Date(period.from)};
+  }
+  const now=new Date();
+  const to=new Date(now);to.setDate(to.getDate()-period.days);
+  const from=new Date(to);from.setDate(from.getDate()-period.days);
+  return{days:'custom',from,to};
+}
+function renderGuidePage(){
+  const channels=getCh();
+  const vids=getVid();
+  const tbody=document.getElementById('guide-thresh-body');
+  if(!tbody)return;
+  if(!channels.length){tbody.innerHTML='<tr><td colspan="6" style="color:var(--text2);text-align:center">Chưa có kênh nào</td></tr>';return;}
+  const reasons={
+    'Giải trí':'80%+ FYP, storytelling cliffhanger → giữ người xem tốt nhưng video dài nên ngưỡng thấp hơn kênh ngắn',
+    'Giáo dục':'Người xem chủ đích → completion cao hơn TB. Search traffic nhiều → watch rate cao hơn',
+    'Bán hàng':'Mục tiêu click/mua, không cần xem hết → completion thấp là bình thường, tập trung ER',
+    'Lifestyle':'Nội dung nhẹ nhàng, FYP nhiều → người xem dễ bỏ giữa chừng',
+    'Truyền cảm hứng':'Cần hook mạnh 3s đầu. Nếu hook tốt watch rate khá cao dù video dài',
+    'Tin tức':'Người xem search → completion cao. Nhưng trending nhanh, cần đăng đúng thời điểm',
+  };
+  tbody.innerHTML=channels.map(ch=>{
+    const cv=vids.filter(v=>v.channel_id===ch.id);
+    const th=getThresh(ch,cv);
+    const dur=ch.thresh?.avg_duration||'(tự động)';
+    const reason=reasons[ch.category]||'Dựa trên thời lượng video và thể loại nội dung';
+    return `<tr>
+      <td><strong>${ch.name}</strong><div style="font-size:11px;color:var(--text2)">${ch.handle}</div></td>
+      <td>${dur}s</td>
+      <td><span class="badge badge-yellow">${ch.category}</span></td>
+      <td><span class="val-low">&lt;${th.wr_low}%</span> / <span class="val-mid">${th.wr_low}–${th.wr_high}%</span> / <span class="val-high">&gt;${th.wr_high}%</span></td>
+      <td><span class="val-low">&lt;${th.comp_low}%</span> / <span class="val-mid">${th.comp_low}–${th.comp_high}%</span> / <span class="val-high">&gt;${th.comp_high}%</span></td>
+      <td style="font-size:12px;color:var(--text2)">${reason}</td>
+    </tr>`;
+  }).join('');
+}
 const COLORS=['#F8E559','#4ade80','#60a5fa','#f87171','#c084fc','#fb923c','#34d399','#e879f9'];
 function fmtN(n){n=Number(n)||0;if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'K';return String(n);}
 function engRate(v){if(!v.views)return 0;return+(((v.likes+v.comments*2+v.shares*3)/v.views)*100).toFixed(1);}
@@ -516,15 +657,18 @@ function renderOverview(){
   mkChart('chart-views',{type:'bar',data:{labels,datasets:[{label:'Lượt xem',data:viewsData,backgroundColor:channels.map((_,i)=>chColor(i)+'bb'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{...axisOpts},x:{...axisOpts}}}});
   mkChart('chart-eng',{type:'bar',data:{labels,datasets:[{label:'Eng Rate %',data:engData,backgroundColor:channels.map((_,i)=>chColor(i)+'bb'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{...axisOpts,ticks:{...axisOpts.ticks,callback:v=>v+'%'}},x:{...axisOpts}}}});
  
-  // Trend line chart — group videos by date
+  // Trend line chart — use ALL videos (not period-filtered) to show full history
+  const allVidsForTrend=getVid();
   const dateMap={};
-  vids.forEach(v=>{
+  allVidsForTrend.forEach(v=>{
     const d=v.date?.slice(0,10);
-    if(!d)return;
+    if(!d||d==='undefined'||d==='')return;
     dateMap[d]=(dateMap[d]||0)+(+v.views||0);
   });
-  const sortedDates=Object.keys(dateMap).sort();
-  mkChart('chart-trend',{type:'line',data:{labels:sortedDates,datasets:[{label:'Lượt xem',data:sortedDates.map(d=>dateMap[d]),borderColor:COLORS[0],backgroundColor:COLORS[0]+'18',tension:.4,pointRadius:3,pointBackgroundColor:COLORS[0],fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{...axisOpts},x:{...axisOpts,ticks:{...axisOpts.ticks,maxTicksLimit:8}}}}});
+  const sortedDates=Object.keys(dateMap).sort((a,b)=>a.localeCompare(b));
+  if(sortedDates.length>0){
+    mkChart('chart-trend',{type:'line',data:{labels:sortedDates,datasets:[{label:'Lượt xem',data:sortedDates.map(d=>dateMap[d]),borderColor:COLORS[0],backgroundColor:COLORS[0]+'18',tension:.4,pointRadius:sortedDates.length<30?4:2,pointBackgroundColor:COLORS[0],fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:t=>t[0].label,label:ctx=>'Lượt xem: '+fmtN(ctx.raw)}}},scales:{y:{...axisOpts,ticks:{...axisOpts.ticks,callback:v=>fmtN(v)}},x:{...axisOpts,ticks:{...axisOpts.ticks,maxTicksLimit:12,maxRotation:45}}}}});
+  }
  
   updateAlertBadge();
 }
@@ -577,28 +721,32 @@ function showChannelDetail(chId){
   const i=channels.indexOf(c);
   const color=chColor(i);
  
+  const th=getThresh(c,vids);
   const rows=vids.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(v=>{
     const wr=watchRate(v);
     const comp=completion(v);
     const er=engRate(v);
+    const wrL=rateLevel(wr,th.wr_low,th.wr_high);
+    const compL=rateLevel(comp,th.comp_low,th.comp_high);
+    const erL=rateLevel(er,th.er_low,th.er_low*2);
     return `<tr>
       <td>${v.date?.slice(0,10)||'—'}</td>
-      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${v.title}">${v.title||'—'}</td>
+      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${v.title}">${v.title||'—'}</td>
       <td>${v.duration||0}s</td>
       <td>${fmtN(v.views)}</td>
       <td>${v.avg_watch||0}s</td>
-      <td>${wr}%</td>
-      <td>${comp}%</td>
+      <td class="${wrL.cls}">${wr}% <span class="val-tag val-tag-${wrL.cls.replace('val-','')}">${wrL.label}</span></td>
+      <td class="${compL.cls}">${comp}% <span class="val-tag val-tag-${compL.cls.replace('val-','')}">${compL.label}</span></td>
       <td>${fmtN(v.likes)}</td>
       <td>${fmtN(v.comments)}</td>
       <td>${fmtN(v.shares)}</td>
-      <td>${er}%</td>
+      <td class="${erL.cls}">${er}% <span class="val-tag val-tag-${erL.cls.replace('val-','')}">${erL.label}</span></td>
       <td style="color:var(--text2);font-size:12px">${v.note||''}</td>
     </tr>`;
   }).join('');
  
   document.getElementById('channel-detail-content').innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
       <div style="display:flex;align-items:center;gap:12px">
         <div class="ch-avatar" style="background:${color}22;color:${color};width:46px;height:46px;font-size:18px">${c.name[0]}</div>
         <div>
@@ -606,8 +754,23 @@ function showChannelDetail(chId){
           <div style="font-size:13px;color:var(--text2)">${c.handle} · ${c.category} · ${fmtN(c.followers)} followers</div>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="editChannelEntry(${c.id})">+ Nhập video</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="openThreshModal(${c.id})">⚙ Ngưỡng đánh giá</button>
+        <button class="btn btn-primary" onclick="editChannelEntry(${c.id})">+ Nhập video</button>
+      </div>
     </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px">
+        Watch Rate: <span class="val-low">Thấp &lt;${th.wr_low}%</span> · <span class="val-mid">TB ${th.wr_low}–${th.wr_high}%</span> · <span class="val-high">Cao &gt;${th.wr_high}%</span>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px">
+        Completion: <span class="val-low">Thấp &lt;${th.comp_low}%</span> · <span class="val-mid">TB ${th.comp_low}–${th.comp_high}%</span> · <span class="val-high">Cao &gt;${th.comp_high}%</span>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px">
+        Eng. Rate: <span class="val-low">Thấp &lt;${th.er_low}%</span> · <span class="val-high">Tốt &gt;${th.er_low}%</span>
+      </div>
+    </div>
+    <div id="detail-compare-${c.id}" style="margin-bottom:14px"></div>
     <div class="card">
       <div class="card-title">Xu hướng lượt xem</div>
       <div class="chart-wrap"><canvas id="detail-chart-${chId}" role="img" aria-label="Xu hướng lượt xem ${c.name}"></canvas></div>
@@ -626,6 +789,52 @@ function showChannelDetail(chId){
   document.getElementById('channels-list-view').style.display='none';
   document.getElementById('channels-detail-view').style.display='block';
  
+  // Comparison kỳ này vs kỳ trước (28 ngày)
+  const allVidsAll=getVid();
+  const now28=new Date();const from28=new Date(now28);from28.setDate(from28.getDate()-28);
+  const from56=new Date(from28);from56.setDate(from56.getDate()-28);
+  const cur28=allVidsAll.filter(v=>v.channel_id===chId&&new Date(v.date)>=from28&&new Date(v.date)<=now28);
+  const prev28=allVidsAll.filter(v=>v.channel_id===chId&&new Date(v.date)>=from56&&new Date(v.date)<from28);
+  function statsOf(arr){
+    const views=arr.reduce((a,v)=>a+(+v.views||0),0);
+    const likes=arr.reduce((a,v)=>a+(+v.likes||0),0);
+    const cmt=arr.reduce((a,v)=>a+(+v.comments||0),0);
+    const shr=arr.reduce((a,v)=>a+(+v.shares||0),0);
+    const er=views>0?((likes+cmt*2+shr*3)/views*100).toFixed(1):0;
+    const wr=arr.length?+(arr.reduce((a,v)=>a+watchRate(v),0)/arr.length).toFixed(1):0;
+    const comp=arr.length?+(arr.reduce((a,v)=>a+completion(v),0)/arr.length).toFixed(1):0;
+    return{views,likes,cmt,shr,er,wr,comp,n:arr.length};
+  }
+  const cs=statsOf(cur28);const ps=statsOf(prev28);
+  const cmpEl=document.getElementById('detail-compare-'+chId);
+  if(cmpEl&&ps.n>0){
+    const row=(label,cur,prev,unit='')=>{
+      const d=parseFloat(cur)-parseFloat(prev);
+      const up=d>=0;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:13px;color:var(--text2)">${label}</span>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:12px;color:var(--text3)">${typeof prev==='number'?fmtN(prev):prev}${unit}</span>
+          <span style="font-size:11px;color:var(--text3)">→</span>
+          <span style="font-size:13px;font-weight:500">${typeof cur==='number'?fmtN(cur):cur}${unit}</span>
+          <span style="font-size:12px;color:${up?'var(--green)':'var(--red)'};min-width:48px;text-align:right">${up?'↑':'↓'}${Math.abs(d).toFixed(typeof d==='number'&&d<10?1:0)}${unit}</span>
+        </div>
+      </div>`;
+    };
+    cmpEl.innerHTML=`<div class="card"><div class="card-title" style="margin-bottom:10px">So sánh 28 ngày gần nhất vs 28 ngày trước đó</div>
+      ${row('Số video',cs.n,ps.n)}
+      ${row('Tổng lượt xem',cs.views,ps.views)}
+      ${row('Watch Rate TB',cs.wr,ps.wr,'%')}
+      ${row('Completion TB',cs.comp,ps.comp,'%')}
+      ${row('Engagement Rate',cs.er,ps.er,'%')}
+      ${row('Likes',cs.likes,ps.likes)}
+      ${row('Comments',cs.cmt,ps.cmt)}
+      ${row('Shares',cs.shr,ps.shr)}
+    </div>`;
+  } else if(cmpEl){
+    cmpEl.innerHTML='';
+  }
+ 
   // Trend chart for this channel
   setTimeout(()=>{
     const sorted=vids.sort((a,b)=>new Date(a.date)-new Date(b.date));
@@ -640,6 +849,36 @@ function showChannelList(){
   document.getElementById('channels-detail-view').style.display='none';
 }
  
+// ─── THRESHOLDS ───────────────────────────────────────────────────────────────
+// Default thresholds by avg duration (seconds)
+function getDefaultThresh(avgDuration){
+  const d=avgDuration||60;
+  if(d<=30)  return {wr_low:35,wr_high:55,comp_low:50,comp_high:75,er_low:3};
+  if(d<=60)  return {wr_low:28,wr_high:45,comp_low:40,comp_high:65,er_low:3};
+  if(d<=80)  return {wr_low:25,wr_high:40,comp_low:35,comp_high:55,er_low:3};
+  if(d<=100) return {wr_low:22,wr_high:36,comp_low:30,comp_high:48,er_low:3};
+  if(d<=130) return {wr_low:20,wr_high:32,comp_low:28,comp_high:42,er_low:3};
+  return             {wr_low:18,wr_high:30,comp_low:25,comp_high:40,er_low:3};
+}
+function getThresh(c,videos){
+  const t=c.thresh||{};
+  const avgDur=t.avg_duration||(videos.length?videos.reduce((a,v)=>a+(+v.duration||0),0)/videos.length:60);
+  const def=getDefaultThresh(avgDur);
+  return {
+    wr_low:  t.wr_low  !=null?t.wr_low  :def.wr_low,
+    wr_high: t.wr_high !=null?t.wr_high :def.wr_high,
+    comp_low: t.comp_low!=null?t.comp_low:def.comp_low,
+    comp_high:t.comp_high!=null?t.comp_high:def.comp_high,
+    er_low:  t.er_low  !=null?t.er_low  :def.er_low,
+  };
+}
+// Return 'high'|'mid'|'low' css class and label
+function rateLevel(val,low,high){
+  if(val>=high)return{cls:'val-high',label:'Cao'};
+  if(val>=low) return{cls:'val-mid', label:'TB'};
+  return              {cls:'val-low', label:'Thấp'};
+}
+ 
 // ─── ALERTS ───────────────────────────────────────────────────────────────────
 function buildChannelAlerts(c,vids){
   const alerts=[];
@@ -652,9 +891,12 @@ function buildChannelAlerts(c,vids){
   const er=views>0?((likes+comments*2+shares*3)/views*100):0;
   const avgWr=cv.reduce((a,v)=>a+watchRate(v),0)/cv.length;
   const avgComp=cv.reduce((a,v)=>a+completion(v),0)/cv.length;
-  if(er<3)alerts.push({type:'danger',msg:`Engagement rate thấp (${er.toFixed(1)}%) — dưới ngưỡng 3%, xem lại CTA và nội dung`});
-  if(avgWr<30)alerts.push({type:'danger',msg:`Watch Rate thấp (${avgWr.toFixed(1)}%) — hook đầu video cần cải thiện`});
-  if(avgComp<50)alerts.push({type:'warn',msg:`Completion Rate thấp (${avgComp.toFixed(1)}%) — video quá dài hoặc nội dung giữa bị loãng`});
+  const th=getThresh(c,cv);
+  if(er<th.er_low)alerts.push({type:'danger',msg:`Engagement rate thấp (${er.toFixed(1)}%) — ngưỡng kênh này: >${th.er_low}%`});
+  if(avgWr<th.wr_low)alerts.push({type:'danger',msg:`Watch Rate thấp (${avgWr.toFixed(1)}%) — ngưỡng kênh này: Thấp <${th.wr_low}% / Cao >${th.wr_high}%`});
+  else if(avgWr<th.wr_high)alerts.push({type:'warn',msg:`Watch Rate trung bình (${avgWr.toFixed(1)}%) — ngưỡng cao kênh này: >${th.wr_high}%`});
+  if(avgComp<th.comp_low)alerts.push({type:'danger',msg:`Completion Rate thấp (${avgComp.toFixed(1)}%) — ngưỡng kênh này: Thấp <${th.comp_low}% / Cao >${th.comp_high}%`});
+  else if(avgComp<th.comp_high)alerts.push({type:'warn',msg:`Completion Rate trung bình (${avgComp.toFixed(1)}%) — ngưỡng cao kênh này: >${th.comp_high}%`});
   if(cv.length<3)alerts.push({type:'warn',msg:`Ít video trong kỳ (${cv.length} video) — nên tăng tần suất đăng`});
   const recent=cv.filter(v=>{const d=new Date(v.date);const now=new Date();return(now-d)/(1000*60*60*24)<=7;});
   if(!recent.length)alerts.push({type:'warn',msg:'Không có video mới trong 7 ngày gần đây'});
@@ -720,15 +962,25 @@ function generateReport(){
     periodDays='custom';
   }
   const period={days:periodDays,from:fromDate,to:toDate};
+  const periodLabel=periodVal==='custom'
+    ?`${document.getElementById('rpt-from').value} → ${document.getElementById('rpt-to').value}`
+    :periodVal+' ngày';
+ 
+  // Also get previous period for comparison
+  const prevPeriod=getPrevPeriod(period);
   const vids=filterByPeriod(allVids,period);
+  const prevVids=filterByPeriod(allVids,prevPeriod);
   const targetChs=chSel==='all'?channels:channels.filter(c=>String(c.id)===chSel);
  
-  let txt=`📊 BÁO CÁO TIKTOK\n`;
-  txt+=`Kỳ: ${periodVal==='custom'?`${document.getElementById('rpt-from').value} → ${document.getElementById('rpt-to').value}`:periodVal+' ngày'}\n`;
-  txt+=`Ngày tạo: ${new Date().toLocaleDateString('vi-VN')}\n${'─'.repeat(52)}\n\n`;
+  if(!targetChs.length){alert('Không có kênh nào để tạo báo cáo.');return;}
+ 
+  // Build HTML preview
+  let html='';
+  let txt=`BÁO CÁO TIKTOK\nKỳ: ${periodLabel}\nNgày tạo: ${new Date().toLocaleDateString('vi-VN')}\n${'─'.repeat(52)}\n\n`;
  
   targetChs.forEach(c=>{
     const cv=vids.filter(v=>v.channel_id===c.id);
+    const pv=prevVids.filter(v=>v.channel_id===c.id);
     const views=cv.reduce((a,v)=>a+(+v.views||0),0);
     const likes=cv.reduce((a,v)=>a+(+v.likes||0),0);
     const comments=cv.reduce((a,v)=>a+(+v.comments||0),0);
@@ -736,31 +988,65 @@ function generateReport(){
     const er=views>0?((likes+comments*2+shares*3)/views*100).toFixed(1):0;
     const avgWr=cv.length?+(cv.reduce((a,v)=>a+watchRate(v),0)/cv.length).toFixed(1):0;
     const avgComp=cv.length?+(cv.reduce((a,v)=>a+completion(v),0)/cv.length).toFixed(1):0;
-    txt+=`📌 ${c.name} (${c.handle})\n`;
-    txt+=`   Followers: ${fmtN(c.followers)} | Video trong kỳ: ${cv.length}\n`;
-    txt+=`   Lượt xem: ${fmtN(views)} | Likes: ${fmtN(likes)} | Comments: ${fmtN(comments)} | Shares: ${fmtN(shares)}\n`;
-    txt+=`   Eng. Rate: ${er}% | Watch Rate TB: ${avgWr}% | Completion TB: ${avgComp}%\n`;
-    if(cv.length){
-      const top=[...cv].sort((a,b)=>(+b.views||0)-(+a.views||0))[0];
-      txt+=`   Video nổi bật nhất: "${top.title}" — ${fmtN(top.views)} views\n`;
-    }
+    // Prev period
+    const pViews=pv.reduce((a,v)=>a+(+v.views||0),0);
+    const pLikes=pv.reduce((a,v)=>a+(+v.likes||0),0);
+    const pCmt=pv.reduce((a,v)=>a+(+v.comments||0),0);
+    const pShr=pv.reduce((a,v)=>a+(+v.shares||0),0);
+    const pEr=pViews>0?((pLikes+pCmt*2+pShr*3)/pViews*100).toFixed(1):0;
+    const pWr=pv.length?+(pv.reduce((a,v)=>a+watchRate(v),0)/pv.length).toFixed(1):0;
+    const pComp=pv.length?+(pv.reduce((a,v)=>a+completion(v),0)/pv.length).toFixed(1):0;
+    const th=getThresh(c,cv);
+    const wrL=rateLevel(avgWr,th.wr_low,th.wr_high);
+    const compL=rateLevel(avgComp,th.comp_low,th.comp_high);
+    const top=cv.length?[...cv].sort((a,b)=>(+b.views||0)-(+a.views||0))[0]:null;
+    const delta=(cur,prev)=>{if(!prev)return '';const d=cur-prev;return `<span style="color:${d>=0?'#4ade80':'#f87171'};font-size:11px;margin-left:4px">${d>=0?'↑':'↓'}${Math.abs(d).toFixed(1)}</span>`;};
+ 
+    html+=`<div style="border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px">
+      <div style="font-size:15px;font-weight:600;margin-bottom:12px;color:var(--yellow)">${c.name} <span style="font-size:12px;color:var(--text2);font-weight:400">${c.handle}</span></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+        <div style="background:var(--bg3);border-radius:6px;padding:10px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px;text-transform:uppercase">Lượt xem</div><div style="font-size:17px;font-weight:600">${fmtN(views)}</div></div>
+        <div style="background:var(--bg3);border-radius:6px;padding:10px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px;text-transform:uppercase">Eng. Rate</div><div style="font-size:17px;font-weight:600">${er}%${delta(parseFloat(er),parseFloat(pEr))}</div></div>
+        <div style="background:var(--bg3);border-radius:6px;padding:10px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px;text-transform:uppercase">Watch Rate TB</div><div style="font-size:17px;font-weight:600" class="${wrL.cls}">${avgWr}%${delta(avgWr,pWr)}<span class="val-tag val-tag-${wrL.cls.replace('val-','')}">${wrL.label}</span></div></div>
+        <div style="background:var(--bg3);border-radius:6px;padding:10px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px;text-transform:uppercase">Completion TB</div><div style="font-size:17px;font-weight:600" class="${compL.cls}">${avgComp}%${delta(avgComp,pComp)}<span class="val-tag val-tag-${compL.cls.replace('val-','')}">${compL.label}</span></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+        <div style="background:var(--bg3);border-radius:6px;padding:10px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px">Likes</div><div style="font-size:15px;font-weight:500">${fmtN(likes)}</div></div>
+        <div style="background:var(--bg3);border-radius:6px;padding:10px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px">Comments</div><div style="font-size:15px;font-weight:500">${fmtN(comments)}</div></div>
+        <div style="background:var(--bg3);border-radius:6px;padding:10px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px">Shares</div><div style="font-size:15px;font-weight:500">${fmtN(shares)}</div></div>
+      </div>
+      ${pv.length?`<div style="font-size:12px;color:var(--text2);background:var(--bg3);border-radius:6px;padding:8px 12px;margin-bottom:10px">So với kỳ trước: Views ${fmtN(pViews)} → ${fmtN(views)} | WR ${pWr}% → ${avgWr}% | Comp ${pComp}% → ${avgComp}%</div>`:''}
+      ${top?`<div style="font-size:12px;color:var(--text2)">🏆 Video nổi bật: <strong style="color:var(--text)">"${top.title}"</strong> — ${fmtN(top.views)} views, WR ${watchRate(top)}%, ER ${engRate(top)}%</div>`:''}
+    </div>`;
+ 
+    txt+=`${c.name} (${c.handle})\n`;
+    txt+=`  Followers: ${fmtN(c.followers)} | Video: ${cv.length}\n`;
+    txt+=`  Lượt xem: ${fmtN(views)} | Likes: ${fmtN(likes)} | Cmts: ${fmtN(comments)} | Shares: ${fmtN(shares)}\n`;
+    txt+=`  Eng.Rate: ${er}% | Watch Rate: ${avgWr}% (${wrL.label}) | Completion: ${avgComp}% (${compL.label})\n`;
+    if(pv.length) txt+=`  Kỳ trước: Views ${fmtN(pViews)} | WR ${pWr}% | Comp ${pComp}%\n`;
+    if(top) txt+=`  Video nổi bật: "${top.title}" — ${fmtN(top.views)} views\n`;
     txt+='\n';
   });
   txt+=`${'─'.repeat(52)}\nBáo cáo tự động từ TikTok Dashboard`;
   _reportText=txt;
  
-  document.getElementById('rpt-text').textContent=txt;
+  document.getElementById('rpt-text').innerHTML=html;
   document.getElementById('rpt-preview').style.display='block';
  
-  // Chart
-  const labels=targetChs.map(c=>c.name);
-  const viewsData=targetChs.map(c=>vids.filter(v=>v.channel_id===c.id).reduce((a,v)=>a+(+v.views||0),0));
+  // Chart: line chart per channel over time
   if(_rptChartInst)_rptChartInst.destroy();
   setTimeout(()=>{
     const ctx=document.getElementById('rpt-chart');
     if(!ctx)return;
-    _rptChartInst=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Lượt xem',data:viewsData,borderColor:COLORS[0],backgroundColor:COLORS[0]+'22',tension:.4,pointRadius:5,pointBackgroundColor:COLORS[0],fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{...axisOpts},x:{...axisOpts}}}});
-  },50);
+    // Build date-based datasets per channel
+    const allDates=[...new Set(vids.map(v=>v.date?.slice(0,10)).filter(Boolean))].sort();
+    if(!allDates.length)return;
+    const datasets=targetChs.map((ch,i)=>{
+      const data=allDates.map(d=>vids.filter(v=>v.channel_id===ch.id&&v.date?.slice(0,10)===d).reduce((a,v)=>a+(+v.views||0),0));
+      return{label:ch.name,data,borderColor:COLORS[i%COLORS.length],backgroundColor:COLORS[i%COLORS.length]+'22',tension:.4,pointRadius:3,fill:false};
+    });
+    _rptChartInst=new Chart(ctx,{type:'line',data:{labels:allDates,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:targetChs.length>1,labels:{color:'#aaa',font:{size:11}}}},scales:{y:{...axisOpts,ticks:{...axisOpts.ticks,callback:v=>fmtN(v)}},x:{...axisOpts,ticks:{...axisOpts.ticks,maxTicksLimit:10,maxRotation:45}}}}});
+  },80);
 }
  
 function downloadReport(){
@@ -954,12 +1240,21 @@ function addChannel(){
   const catSel=document.getElementById('nc-cat').value;
   const category=catSel==='Khác'?document.getElementById('nc-other').value.trim()||'Khác':catSel;
   if(!name||!handle){alert('Vui lòng điền tên và handle');return;}
+  // Thresholds — null = use default
+  const thresh={
+    wr_low: document.getElementById('nc-wr-low').value!==''?parseFloat(document.getElementById('nc-wr-low').value):null,
+    wr_high:document.getElementById('nc-wr-high').value!==''?parseFloat(document.getElementById('nc-wr-high').value):null,
+    comp_low:document.getElementById('nc-comp-low').value!==''?parseFloat(document.getElementById('nc-comp-low').value):null,
+    comp_high:document.getElementById('nc-comp-high').value!==''?parseFloat(document.getElementById('nc-comp-high').value):null,
+    er_low:document.getElementById('nc-er-low').value!==''?parseFloat(document.getElementById('nc-er-low').value):null,
+    avg_duration:document.getElementById('nc-duration').value!==''?parseFloat(document.getElementById('nc-duration').value):null,
+  };
   const channels=getCh();
   const id=Date.now();
-  channels.push({id,name,handle,category,followers});
+  channels.push({id,name,handle,category,followers,thresh});
   saveCh(channels);
   closeModal('modal-add-ch');
-  ['nc-name','nc-handle','nc-followers','nc-other'].forEach(x=>{const el=document.getElementById(x);if(el)el.value='';});
+  ['nc-name','nc-handle','nc-followers','nc-other','nc-wr-low','nc-wr-high','nc-comp-low','nc-comp-high','nc-er-low','nc-duration'].forEach(x=>{const el=document.getElementById(x);if(el)el.value='';});
   renderChannels();renderOverview();updateRptChannelSel();
 }
 function deleteChannel(id){
@@ -1137,13 +1432,14 @@ function nav(tab){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+tab).classList.add('active');
-  const tabs=['overview','channels','alerts','report','_','setup'];
+  const tabs=['overview','channels','alerts','report','guide','_','setup'];
   const idx=tabs.indexOf(tab);
   if(idx>=0)document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
   if(tab==='overview')renderOverview();
   if(tab==='channels'){showChannelList();renderChannels();}
   if(tab==='alerts')renderAlerts();
   if(tab==='report')updateRptChannelSel();
+  if(tab==='guide')renderGuidePage();
   if(tab==='setup')loadConfigUI();
 }
  
